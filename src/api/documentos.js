@@ -1,0 +1,27 @@
+import axiosClient from './axiosClient'
+import { mockDocumentos } from '@/mocks/documentos'
+
+const MOCK = import.meta.env.VITE_USE_MOCKS === 'true'
+
+export const documentosApi = {
+  buscar: (filtros) =>
+    MOCK
+      ? Promise.resolve(mockDocumentos)
+      : axiosClient.get('/documentos', { params: filtros }),
+
+  getById: (id) =>
+    MOCK
+      ? Promise.resolve(mockDocumentos.find((d) => d.id === Number(id)))
+      : axiosClient.get(`/documentos/${id}`),
+
+  crear: (datos, archivo) => {
+    const form = new FormData()
+    form.append('archivo', archivo)
+    Object.entries(datos).forEach(([k, v]) => {
+      if (v) form.append(k, v)
+    })
+    return axiosClient.post('/documentos', form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+  },
+}
