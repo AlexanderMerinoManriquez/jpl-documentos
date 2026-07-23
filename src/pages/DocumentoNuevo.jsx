@@ -1,30 +1,37 @@
 import { useState } from 'react'
 import { ArrowLeft } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
-import CampoFecha from '@/components/CampoFecha'
+import Boton from '@/components/Boton'
 import SelectorArchivo from '@/components/SelectorArchivo'
+import SelectorInstitucion from '@/components/SelectorInstitucion'
 import { useSubirDocumento } from '@/hooks/documentos'
-import { REMITENTES, TIPOS } from '@/lib/constantes'
+import { etiquetaCodigo, INSTITUCIONES, TIPOS } from '@/lib/constantes'
+import { usarSesion } from '@/lib/sesion'
+import { CAMPO } from '@/lib/estilos'
 
-const INICIAL = { rol: '', tipo: '', nombre: '', remitente: '', fechaDocumento: '', observaciones: '' }
-
-const CAMPO = 'w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-100'
+const INICIAL = { codigo: '', tipo: '', nombre: '', institucionId: '', observaciones: '' }
 
 export default function DocumentoNuevo() {
   const navigate = useNavigate()
-  const [form, setForm] = useState(INICIAL)
+  const { permisos, institucionFija } = usarSesion()
+  const [form, setForm] = useState({ ...INICIAL, institucionId: institucionFija })
   const [archivo, setArchivo] = useState(null)
   const { crear, validarArchivo, subiendo, error } = useSubirDocumento()
 
   const set = (campo) => (e) => setForm({ ...form, [campo]: e.target.value })
   const errorArchivo = validarArchivo(archivo)
+  const etiqueta = etiquetaCodigo(form.institucionId)
 
-  const completo = archivo && !errorArchivo && form.rol && form.tipo && form.nombre && form.remitente && form.fechaDocumento
+  const completo = archivo && !errorArchivo && form.codigo && form.tipo && form.nombre && form.institucionId
 
   const enviar = async (e) => {
     e.preventDefault()
     const doc = await crear(form, archivo)
     if (doc) navigate(`/documentos/${doc.id}`)
+  }
+
+  if (!permisos.digitalizar) {
+    return <p className="text-sm text-slate-500">No tienes permisos para digitalizar documentos.</p>
   }
 
   return (
@@ -34,44 +41,39 @@ export default function DocumentoNuevo() {
         Volver a documentos
       </Link>
 
-      <form onSubmit={enviar} className="mt-3 rounded-2xl border border-slate-200 bg-white p-6">
-        <h2 className="text-2xl font-semibold text-slate-900">Digitalizar documento</h2>
-        <p className="mt-1 text-sm text-slate-500">Sube el escaneo del documento físico y registra sus datos.</p>
+      <form onSubmit={enviar} className="mt-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-md lg:p-6">
+        <h2 className="text-2xl font-semibold text-slate-900 lg:text-3xl">Digitalizar documento</h2>
+        <p className="mt-1 text-sm text-slate-500">Sube el escaneo del documento físico y registra sus datos. La fecha de ingreso se registra automáticamente.</p>
 
         <div className="mt-6">
           <SelectorArchivo archivo={archivo} onSeleccionar={setArchivo} error={errorArchivo} />
         </div>
 
-        <div className="mt-6 grid grid-cols-2 gap-4">
-          <Campo label="ROL" requerido>
-            <input value={form.rol} onChange={set('rol')} placeholder="C-1234-2026" className={CAMPO} />
+        <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <div className="lg:col-span-2">
+            <Campo label="Institución" requerido>
+              <SelectorInstitucion value={form.institucionId} opciones={INSTITUCIONES} onSeleccionar={(v) => setForm({ ...form, institucionId: v })} placeholder="Seleccionar institución…" conTodas={false} />
+            </Campo>
+          </div>
+
+          <Campo label={etiqueta} requerido>
+            <input value={form.codigo} onChange={set('codigo')} placeholder="C-1234-2026" className={CAMPO} />
           </Campo>
 
           <Campo label="Tipo de documento" requerido>
-            <select value={form.tipo} onChange={set('tipo')} className={CAMPO}>
+            <select value={form.tipo} onChange={set('tipo')} className={`${CAMPO} cursor-pointer`}>
               <option value="">Seleccionar…</option>
               {TIPOS.map((t) => <option key={t} value={t}>{t}</option>)}
             </select>
           </Campo>
 
-          <Campo label="Remitente" requerido>
-            <select value={form.remitente} onChange={set('remitente')} className={CAMPO}>
-              <option value="">Seleccionar…</option>
-              {REMITENTES.map((r) => <option key={r} value={r}>{r}</option>)}
-            </select>
-          </Campo>
-
-          <Campo label="Fecha del documento" requerido>
-            <CampoFecha value={form.fechaDocumento} onChange={(iso) => setForm({ ...form, fechaDocumento: iso })} />
-          </Campo>
-
-          <div className="col-span-2">
+          <div className="lg:col-span-2">
             <Campo label="Nombre o materia" requerido>
               <input value={form.nombre} onChange={set('nombre')} placeholder="Descripción breve del documento" className={CAMPO} />
             </Campo>
           </div>
 
-          <div className="col-span-2">
+          <div className="lg:col-span-2">
             <Campo label="Observaciones">
               <textarea rows={3} value={form.observaciones} onChange={set('observaciones')} className={CAMPO} />
             </Campo>
@@ -80,13 +82,13 @@ export default function DocumentoNuevo() {
 
         {error && <p className="mt-5 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
 
-        <div className="mt-6 flex gap-3">
-          <button type="submit" disabled={!completo || subiendo} className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300">
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+          <Boton type="submit" disabled={!completo || subiendo}>
             {subiendo ? 'Subiendo…' : 'Digitalizar documento'}
-          </button>
-          <button type="button" onClick={() => navigate('/documentos')} className="rounded-xl border border-slate-200 px-5 py-2.5 text-sm text-slate-700 transition-colors hover:bg-slate-50">
+          </Boton>
+          <Boton type="button" variante="secundario" onClick={() => navigate('/documentos')}>
             Cancelar
-          </button>
+          </Boton>
         </div>
       </form>
     </div>

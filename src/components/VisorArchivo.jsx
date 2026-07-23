@@ -14,7 +14,7 @@ export default function VisorArchivo({ version }) {
   const claseBoton = 'inline-flex shrink-0 items-center gap-2 rounded-lg border border-slate-200 px-3 py-1.5 text-sm text-slate-700 transition-colors hover:bg-slate-50'
 
   return (
-    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-md">
       <div className="flex items-center justify-between gap-4 border-b border-slate-200 px-4 py-2.5">
         <div className="min-w-0">
           <p className="truncate text-sm font-medium text-slate-800">{version.nombre}</p>
@@ -26,8 +26,8 @@ export default function VisorArchivo({ version }) {
         </a>
       </div>
 
-      <div className="flex min-h-[70vh] items-center justify-center bg-slate-100">
-        {version.url && <iframe src={version.url} title={version.nombre} className="h-[70vh] w-full border-0" />}
+      <div className="flex min-h-[50vh] items-center justify-center bg-slate-100 lg:min-h-[70vh]">
+        {version.url && <iframe src={version.url} title={version.nombre} className="h-[50vh] w-full border-0 lg:h-[70vh]" />}
         {!version.url && <p className="text-sm text-slate-400">Vista previa no disponible.</p>}
       </div>
     </div>

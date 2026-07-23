@@ -24,4 +24,25 @@ export const documentosApi = {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
   },
+
+  nuevaVersion: (id, motivo, archivo) => {
+    const form = new FormData()
+    form.append('archivo', archivo)
+    form.append('motivo', motivo)
+    return axiosClient.post(`/documentos/${id}/versiones`, form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+  },
+
+  consultaPublica: (rol, institucion) => {
+    if (MOCK) {
+      const q = rol.trim().toLowerCase()
+      return Promise.resolve(
+        mockDocumentos.filter(
+          (d) => d.rol.toLowerCase() === q && (!institucion || d.institucion === institucion)
+        )
+      )
+    }
+    return axiosClient.get('/publico/documentos', { params: { rol, institucion } })
+  },
 }

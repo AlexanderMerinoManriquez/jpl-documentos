@@ -1,0 +1,1 @@
+export const CAMPO = 'w-full rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-[15px] text-slate-800 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-100'

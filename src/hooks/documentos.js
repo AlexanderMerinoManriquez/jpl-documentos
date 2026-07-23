@@ -39,11 +39,8 @@ export function useDocumentos(filtros) {
 }
 
 export function useDocumento(id) {
-  const [resultado, setResultado] = useState({
-    id: null,
-    documento: null,
-    error: null,
-  })
+  const [resultado, setResultado] = useState({ id: null, documento: null, error: null })
+  const [recarga, setRecarga] = useState(0)
 
   useEffect(() => {
     let vigente = true
@@ -54,18 +51,15 @@ export function useDocumento(id) {
         if (vigente) setResultado({ id, documento: data ?? null, error: null })
       })
       .catch((err) => {
-        if (vigente)
-          setResultado({
-            id,
-            documento: null,
-            error: err.message ?? 'No se pudo cargar el documento',
-          })
+        if (vigente) setResultado({ id, documento: null, error: err.message ?? 'No se pudo cargar el documento' })
       })
 
     return () => {
       vigente = false
     }
-  }, [id])
+  }, [id, recarga])
+
+  const refetch = useCallback(() => setRecarga((n) => n + 1), [])
 
   const loading = resultado.id !== id
 
@@ -73,6 +67,7 @@ export function useDocumento(id) {
     documento: loading ? null : resultado.documento,
     loading,
     error: loading ? null : resultado.error,
+    refetch,
   }
 }
 
@@ -90,7 +85,7 @@ export function useSubirDocumento() {
     return null
   }, [])
 
-  const crear = useCallback(async (datos, archivo) => {
+  const ejecutar = useCallback(async (accion, archivo, mensajeError) => {
     const invalido = validarArchivo(archivo)
     if (invalido) {
       setError(invalido)
@@ -99,14 +94,26 @@ export function useSubirDocumento() {
     setSubiendo(true)
     setError(null)
     try {
-      return await documentosApi.crear(datos, archivo)
+      return await accion()
     } catch (err) {
-      setError(err.message ?? 'No se pudo subir el documento.')
+      setError(err.message ?? mensajeError)
       return null
     } finally {
       setSubiendo(false)
     }
   }, [validarArchivo])
 
-  return { crear, validarArchivo, subiendo, error }
+  const crear = useCallback(
+    (datos, archivo) =>
+      ejecutar(() => documentosApi.crear(datos, archivo), archivo, 'No se pudo subir el documento.'),
+    [ejecutar]
+  )
+
+  const versionar = useCallback(
+    (id, motivo, archivo) =>
+      ejecutar(() => documentosApi.nuevaVersion(id, motivo, archivo), archivo, 'No se pudo subir la nueva versión.'),
+    [ejecutar]
+  )
+
+  return { crear, versionar, validarArchivo, subiendo, error }
 }

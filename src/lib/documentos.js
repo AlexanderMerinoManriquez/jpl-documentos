@@ -1,5 +1,7 @@
 export const versionActiva = (doc) => doc?.versiones?.find((v) => v.activa) ?? null
 
+export const fechaUltimaActualizacion = (doc) => versionActiva(doc)?.subidoEn ?? doc?.creadoEn ?? null
+
 export const formatearTamano = (bytes) => {
   if (!bytes) return '—'
   const mb = bytes / 1024 / 1024
