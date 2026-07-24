@@ -1,7 +1,7 @@
 export const mockExpedientes = [
   {
     id: 1,
-    codigo: 'C-1234-2026',
+    codigo: '1234-2026',
     institucionId: 'jpl1',
     caratula: 'Municipalidad de Chillán con Pérez',
     creadoEn: '2026-07-15T09:32:00Z',
@@ -67,7 +67,7 @@ export const mockExpedientes = [
   },
   {
     id: 2,
-    codigo: 'C-1235-2026',
+    codigo: '1235-2026',
     institucionId: 'jpl2',
     caratula: 'Tesorería Municipal con Soto',
     creadoEn: '2026-07-18T14:05:00Z',

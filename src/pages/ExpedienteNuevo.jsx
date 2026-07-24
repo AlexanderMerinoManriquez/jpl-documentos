@@ -4,9 +4,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import Boton from '@/components/Boton'
 import SelectorInstitucion from '@/components/SelectorInstitucion'
 import { expedientesApi } from '@/api/expedientes'
-import { etiquetaCodigo, INSTITUCIONES } from '@/lib/constantes'
+import { CAMPO, etiquetaCodigo, INSTITUCIONES } from '@/lib/constantes'
 import { useSesion } from '@/lib/sesion'
-import { CAMPO } from '@/lib/estilos'
 
 const INICIAL = { codigo: '', caratula: '', institucionId: '' }
 

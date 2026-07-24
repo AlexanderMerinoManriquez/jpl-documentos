@@ -5,10 +5,9 @@ import Boton from '@/components/Boton'
 import Paginacion from '@/components/Paginacion'
 import SelectorInstitucion from '@/components/SelectorInstitucion'
 import { useExpedientes } from '@/hooks/expedientes'
-import { etiquetaCodigoActiva, INSTITUCIONES, nombreInstitucion } from '@/lib/constantes'
+import { CAMPO, etiquetaCodigoActiva, INSTITUCIONES, nombreInstitucion } from '@/lib/constantes'
 import { formatearFecha, totalDocumentos, ultimoMovimiento } from '@/lib/expedientes'
 import { useSesion } from '@/lib/sesion'
-import { CAMPO } from '@/lib/estilos'
 
 const POR_PAGINA = 15
 const TH = 'px-4 py-4 text-sm font-semibold'

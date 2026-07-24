@@ -3,7 +3,14 @@ import { Check, ChevronDown, Search } from 'lucide-react'
 
 const TODAS = { id: '', nombre: '' }
 
-export default function SelectorInstitucion({ value, opciones, onSeleccionar, placeholder = 'Todas las instituciones', conTodas = true, className = '' }) {
+const BASE = 'flex w-full cursor-pointer items-center justify-between gap-2 text-left text-[15px] text-slate-800 transition'
+
+const VARIANTES = {
+  campo: 'rounded-xl border border-slate-200 bg-white px-3.5 py-3 shadow-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-100 focus:outline-none',
+  plano: 'bg-transparent px-5 py-3.5 outline-none',
+}
+
+export default function SelectorInstitucion({ value, opciones, onSeleccionar, placeholder = 'Todas las instituciones', conTodas = true, variante = 'campo', className = '' }) {
   const [abierto, setAbierto] = useState(false)
   const [filtro, setFiltro] = useState('')
   const [indice, setIndice] = useState(0)
@@ -56,13 +63,13 @@ export default function SelectorInstitucion({ value, opciones, onSeleccionar, pl
 
   return (
     <div ref={contenedor} className={`relative w-full ${className}`}>
-      <button type="button" onClick={() => setAbierto((v) => !v)} className="flex w-full cursor-pointer items-center justify-between gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-left text-[15px] text-slate-800 shadow-sm transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100 focus:outline-none">
+      <button type="button" onClick={() => setAbierto((v) => !v)} className={`${BASE} ${VARIANTES[variante]}`}>
         <span className={`truncate ${actual ? '' : 'text-slate-400'}`}>{actual?.nombre ?? placeholder}</span>
         <ChevronDown size={18} className={`shrink-0 text-slate-400 transition-transform ${abierto ? 'rotate-180' : ''}`} />
       </button>
 
       {abierto && (
-        <div className="absolute z-20 mt-1.5 w-full overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg">
+        <div className="absolute z-20 mt-1.5 w-full min-w-64 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg">
           <div className="relative border-b border-slate-100">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input ref={inputRef} value={filtro} onChange={(e) => { setFiltro(e.target.value); setIndice(0) }} onKeyDown={teclado} placeholder="Buscar institución" className="w-full py-2.5 pl-9 pr-3 text-sm outline-none placeholder:text-slate-400" />

@@ -1,11 +1,13 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import Layout from '@/components/Layout'
+import PublicoConsulta from '@/pages/PublicoConsulta'
 import Expedientes from '@/pages/Expedientes'
 import ExpedienteDetalle from '@/pages/ExpedienteDetalle'
 import ExpedienteNuevo from '@/pages/ExpedienteNuevo'
 import Estadisticas from '@/pages/Estadisticas'
 
 export const router = createBrowserRouter([
+  { path: '/consulta', element: <PublicoConsulta /> },
   {
     path: '/',
     element: <Layout />,

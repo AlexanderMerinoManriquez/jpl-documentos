@@ -3,9 +3,9 @@ import Boton from '@/components/Boton'
 import Modal from '@/components/Modal'
 import SelectorArchivo from '@/components/SelectorArchivo'
 import { useSubirArchivo } from '@/hooks/expedientes'
-import { CAMPO } from '@/lib/estilos'
+import { CAMPO } from '@/lib/constantes'
 
-export default function ModalNuevaVersion({ abierto, documentoId, onCerrar, onListo }) {
+export default function ModalReemplazar({ abierto, documentoId, onCerrar, onListo }) {
   const [archivo, setArchivo] = useState(null)
   const [motivo, setMotivo] = useState('')
   const { versionar, validarArchivo, subiendo, error } = useSubirArchivo()
