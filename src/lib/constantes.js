@@ -12,3 +12,9 @@ export const etiquetaCodigo = (institucionId) =>
 
 export const nombreInstitucion = (institucionId) =>
   INSTITUCIONES.find((i) => i.id === institucionId)?.nombre ?? '—'
+
+export const etiquetaCodigoActiva = (institucionId) => {
+  if (institucionId) return etiquetaCodigo(institucionId)
+  const etiquetas = new Set(INSTITUCIONES.map((i) => i.etiquetaCodigo))
+  return etiquetas.size === 1 ? [...etiquetas][0] : ETIQUETA_CODIGO_POR_DEFECTO
+}

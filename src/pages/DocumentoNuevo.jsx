@@ -6,14 +6,14 @@ import SelectorArchivo from '@/components/SelectorArchivo'
 import SelectorInstitucion from '@/components/SelectorInstitucion'
 import { useSubirDocumento } from '@/hooks/documentos'
 import { etiquetaCodigo, INSTITUCIONES, TIPOS } from '@/lib/constantes'
-import { usarSesion } from '@/lib/sesion'
+import { useSesion } from '@/lib/sesion'
 import { CAMPO } from '@/lib/estilos'
 
 const INICIAL = { codigo: '', tipo: '', nombre: '', institucionId: '', observaciones: '' }
 
 export default function DocumentoNuevo() {
   const navigate = useNavigate()
-  const { permisos, institucionFija } = usarSesion()
+  const { permisos, institucionFija } = useSesion()
   const [form, setForm] = useState({ ...INICIAL, institucionId: institucionFija })
   const [archivo, setArchivo] = useState(null)
   const { crear, validarArchivo, subiendo, error } = useSubirDocumento()

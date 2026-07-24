@@ -7,7 +7,7 @@ import { useDocumentos } from '@/hooks/documentos'
 import { useEstadisticas } from '@/hooks/useEstadisticas'
 import { INSTITUCIONES, nombreInstitucion } from '@/lib/constantes'
 import { formatearFecha } from '@/lib/documentos'
-import { usarSesion } from '@/lib/sesion'
+import { useSesion } from '@/lib/sesion'
 
 const COLORES = ['#2563eb', '#0ea5e9', '#6366f1', '#8b5cf6', '#14b8a6', '#f59e0b']
 const EJE = { fontSize: 12, fill: '#64748b' }
@@ -15,7 +15,7 @@ const TOOLTIP = { borderRadius: 12, border: '1px solid #e2e8f0', fontSize: 13 }
 
 export default function Estadisticas() {
   const { documentos, loading, error } = useDocumentos()
-  const { permisos, institucionFija } = usarSesion()
+  const { permisos, institucionFija } = useSesion()
   const [seleccion, setSeleccion] = useState('')
 
   const institucionId = institucionFija || seleccion

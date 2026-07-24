@@ -1,14 +1,16 @@
 import { useState } from 'react'
 import { ChevronDown, FileText, LayoutDashboard, Menu, Upload, User, X } from 'lucide-react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
+import { useSesion } from '@/lib/sesion'
 
-const navegacion = [
-  { to: '/documentos', icon: FileText, label: 'Documentos', descripcion: 'Consulta y búsqueda' },
-  { to: '/documentos/nuevo', icon: Upload, label: 'Digitalizar', descripcion: 'Subir documento escaneado' },
-  { to: '/estadisticas', icon: LayoutDashboard, label: 'Estadísticas', descripcion: 'Resumen de actividad' },
+const NAVEGACION = [
+  { to: '/documentos', icon: FileText, label: 'Documentos', descripcion: 'Consulta y búsqueda', permiso: null },
+  { to: '/documentos/nuevo', icon: Upload, label: 'Digitalizar', descripcion: 'Subir documento escaneado', permiso: 'digitalizar' },
+  { to: '/estadisticas', icon: LayoutDashboard, label: 'Estadísticas', descripcion: 'Resumen de actividad', permiso: 'estadisticas' },
 ]
 
 export default function Layout() {
+  const { permisos } = useSesion()
   const [abierto, setAbierto] = useState(false)
   const [rutaVista, setRutaVista] = useState(null)
   const { pathname } = useLocation()
@@ -17,6 +19,8 @@ export default function Layout() {
     setRutaVista(pathname)
     setAbierto(false)
   }
+
+  const items = NAVEGACION.filter((i) => !i.permiso || permisos[i.permiso])
 
   return (
     <div className="min-h-screen bg-slate-100 lg:flex">
@@ -50,7 +54,7 @@ export default function Layout() {
         </div>
 
         <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-3">
-          {navegacion.map(({ to, icon: Icon, label, descripcion }) => (
+          {items.map(({ to, icon: Icon, label, descripcion }) => (
             <NavLink key={to} to={to} end={to === '/documentos'} className={({ isActive }) => `relative flex items-start gap-3 rounded-xl px-3 py-3 transition-colors ${isActive ? 'bg-blue-50 shadow-sm' : 'hover:bg-slate-50'}`}>
               {({ isActive }) => (
                 <>

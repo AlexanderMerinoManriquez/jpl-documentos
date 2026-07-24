@@ -33,16 +33,4 @@ export const documentosApi = {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
   },
-
-  consultaPublica: (rol, institucion) => {
-    if (MOCK) {
-      const q = rol.trim().toLowerCase()
-      return Promise.resolve(
-        mockDocumentos.filter(
-          (d) => d.rol.toLowerCase() === q && (!institucion || d.institucion === institucion)
-        )
-      )
-    }
-    return axiosClient.get('/publico/documentos', { params: { rol, institucion } })
-  },
 }

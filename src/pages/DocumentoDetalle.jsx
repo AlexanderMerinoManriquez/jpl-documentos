@@ -8,12 +8,12 @@ import VisorArchivo from '@/components/VisorArchivo'
 import { useDocumento } from '@/hooks/documentos'
 import { etiquetaCodigo, nombreInstitucion } from '@/lib/constantes'
 import { fechaUltimaActualizacion, formatearFecha, versionActiva } from '@/lib/documentos'
-import { usarSesion } from '@/lib/sesion'
+import { useSesion } from '@/lib/sesion'
 
 export default function DocumentoDetalle() {
   const { id } = useParams()
   const { documento, loading, error, refetch } = useDocumento(id)
-  const { permisos } = usarSesion()
+  const { permisos } = useSesion()
   const [verVersion, setVerVersion] = useState(null)
   const [modalAbierto, setModalAbierto] = useState(false)
 
