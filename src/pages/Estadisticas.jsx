@@ -1,12 +1,12 @@
 import { useState } from 'react'
-import { Building2, FileText, Layers, Users } from 'lucide-react'
+import { Building2, FileText, FolderOpen, Users } from 'lucide-react'
 import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { Link } from 'react-router-dom'
 import SelectorInstitucion from '@/components/SelectorInstitucion'
-import { useDocumentos } from '@/hooks/documentos'
+import { useExpedientes } from '@/hooks/expedientes'
 import { useEstadisticas } from '@/hooks/useEstadisticas'
 import { INSTITUCIONES, nombreInstitucion } from '@/lib/constantes'
-import { formatearFecha } from '@/lib/documentos'
+import { formatearFecha } from '@/lib/expedientes'
 import { useSesion } from '@/lib/sesion'
 
 const COLORES = ['#2563eb', '#0ea5e9', '#6366f1', '#8b5cf6', '#14b8a6', '#f59e0b']
@@ -14,12 +14,12 @@ const EJE = { fontSize: 12, fill: '#64748b' }
 const TOOLTIP = { borderRadius: 12, border: '1px solid #e2e8f0', fontSize: 13 }
 
 export default function Estadisticas() {
-  const { documentos, loading, error } = useDocumentos()
+  const { expedientes, loading, error } = useExpedientes()
   const { permisos, institucionFija } = useSesion()
   const [seleccion, setSeleccion] = useState('')
 
   const institucionId = institucionFija || seleccion
-  const stats = useEstadisticas(documentos, institucionId)
+  const stats = useEstadisticas(expedientes, institucionId)
 
   if (!permisos.estadisticas) {
     return <p className="text-sm text-slate-500">No tienes permisos para ver esta sección.</p>
@@ -41,8 +41,8 @@ export default function Estadisticas() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Tarjeta icono={FileText} label="Documentos digitalizados" valor={stats.total} />
-        <Tarjeta icono={Layers} label="Archivos subidos" valor={stats.totalVersiones} />
+        <Tarjeta icono={FolderOpen} label="Causas registradas" valor={stats.totalCausas} />
+        <Tarjeta icono={FileText} label="Documentos digitalizados" valor={stats.totalDocumentos} />
         <Tarjeta icono={Users} label="Funcionarios activos" valor={stats.porFuncionario.length} />
         <Tarjeta icono={Building2} label="Instituciones" valor={stats.porInstitucion.length} />
       </div>
@@ -112,7 +112,7 @@ export default function Estadisticas() {
                   <span className="shrink-0 font-medium text-slate-900">{i.total}</span>
                 </div>
                 <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-slate-100">
-                  <div className="h-full rounded-full bg-blue-600" style={{ width: `${(i.total / stats.total) * 100}%` }} />
+                  <div className="h-full rounded-full bg-blue-600" style={{ width: `${(i.total / stats.totalCausas) * 100}%` }} />
                 </div>
               </li>
             ))}
@@ -120,19 +120,19 @@ export default function Estadisticas() {
         </Panel>
       )}
 
-      <Panel titulo="Últimos documentos digitalizados">
+      <Panel titulo="Últimas causas registradas">
         {stats.recientes.length === 0 ? (
-          <p className="py-8 text-center text-sm text-slate-400">Sin documentos.</p>
+          <p className="py-8 text-center text-sm text-slate-400">Sin causas.</p>
         ) : (
           <ul className="divide-y divide-slate-100">
-            {stats.recientes.map((d) => (
-              <li key={d.id}>
-                <Link to={`/documentos/${d.id}`} className="flex items-center justify-between gap-4 py-3 transition-colors hover:bg-slate-50">
+            {stats.recientes.map((exp) => (
+              <li key={exp.id}>
+                <Link to={`/expedientes/${exp.id}`} className="flex items-center justify-between gap-4 py-3 transition-colors hover:bg-slate-50">
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-blue-600">{d.codigo}</p>
-                    <p className="truncate text-sm text-slate-600">{d.nombre}</p>
+                    <p className="text-sm font-medium text-blue-600">{exp.codigo}</p>
+                    <p className="truncate text-sm text-slate-600">{exp.caratula}</p>
                   </div>
-                  <span className="shrink-0 text-xs text-slate-400">{formatearFecha(d.creadoEn)}</span>
+                  <span className="shrink-0 text-xs text-slate-400">{formatearFecha(exp.creadoEn)}</span>
                 </Link>
               </li>
             ))}

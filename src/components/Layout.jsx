@@ -1,16 +1,16 @@
 import { useState } from 'react'
-import { ChevronDown, FileText, LayoutDashboard, Menu, Upload, User, X } from 'lucide-react'
+import { ChevronDown, FolderOpen, FolderPlus, LayoutDashboard, Menu, User, X } from 'lucide-react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
-import { useSesion } from '@/lib/sesion'
+import { ROL_LABEL, useSesion } from '@/lib/sesion'
 
 const NAVEGACION = [
-  { to: '/documentos', icon: FileText, label: 'Documentos', descripcion: 'Consulta y búsqueda', permiso: null },
-  { to: '/documentos/nuevo', icon: Upload, label: 'Digitalizar', descripcion: 'Subir documento escaneado', permiso: 'digitalizar' },
+  { to: '/expedientes', icon: FolderOpen, label: 'Expedientes', descripcion: 'Consulta y búsqueda', permiso: null },
+  { to: '/expedientes/nuevo', icon: FolderPlus, label: 'Nuevo expediente', descripcion: 'Registrar una causa', permiso: 'digitalizar' },
   { to: '/estadisticas', icon: LayoutDashboard, label: 'Estadísticas', descripcion: 'Resumen de actividad', permiso: 'estadisticas' },
 ]
 
 export default function Layout() {
-  const { permisos } = useSesion()
+  const { usuario, permisos } = useSesion()
   const [abierto, setAbierto] = useState(false)
   const [rutaVista, setRutaVista] = useState(null)
   const { pathname } = useLocation()
@@ -38,7 +38,7 @@ export default function Layout() {
 
       {abierto && <div onClick={() => setAbierto(false)} className="fixed inset-0 z-40 bg-slate-900/40 lg:hidden" />}
 
-      <aside className={`fixed inset-y-0 left-0 z-50 flex w-72 shrink-0 flex-col border-r border-slate-200 bg-white shadow-md transition-transform duration-200 lg:static lg:translate-x-0 ${abierto ? 'translate-x-0' : '-translate-x-full'}`}>
+      <aside className={`fixed inset-y-0 left-0 z-50 flex w-72 shrink-0 flex-col border-r border-slate-200 bg-white shadow-md transition-transform duration-200 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 ${abierto ? 'translate-x-0' : '-translate-x-full'}`}>
         <button type="button" onClick={() => setAbierto(false)} className="absolute right-3 top-3 cursor-pointer rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-100 lg:hidden">
           <X size={18} />
         </button>
@@ -55,7 +55,7 @@ export default function Layout() {
 
         <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-3">
           {items.map(({ to, icon: Icon, label, descripcion }) => (
-            <NavLink key={to} to={to} end={to === '/documentos'} className={({ isActive }) => `relative flex items-start gap-3 rounded-xl px-3 py-3 transition-colors ${isActive ? 'bg-blue-50 shadow-sm' : 'hover:bg-slate-50'}`}>
+            <NavLink key={to} to={to} end={to === '/expedientes'} className={({ isActive }) => `relative flex items-start gap-3 rounded-xl px-3 py-3 transition-colors ${isActive ? 'bg-blue-50 shadow-sm' : 'hover:bg-slate-50'}`}>
               {({ isActive }) => (
                 <>
                   <Icon size={20} className={`mt-0.5 shrink-0 ${isActive ? 'text-blue-600' : 'text-slate-400'}`} />
@@ -75,7 +75,10 @@ export default function Layout() {
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-200">
               <User size={18} className="text-slate-500" />
             </span>
-            <span className="flex-1 text-sm text-slate-400">Sin sesión</span>
+            <span className="min-w-0 flex-1 leading-tight">
+              <span className="block truncate text-sm font-medium text-slate-800">{usuario?.nombre || 'Sin sesión'}</span>
+              {usuario?.rol && <span className="block text-xs text-slate-500">{ROL_LABEL[usuario.rol]}</span>}
+            </span>
             <ChevronDown size={16} className="shrink-0 text-slate-300" />
           </div>
         </div>

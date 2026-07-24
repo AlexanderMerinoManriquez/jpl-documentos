@@ -15,10 +15,11 @@ const agrupar = (entradas) =>
     .map(([nombre, total]) => ({ nombre, total }))
     .sort((a, b) => b.total - a.total)
 
-export function useEstadisticas(documentos, institucionId = '') {
+export function useEstadisticas(expedientes, institucionId = '') {
   return useMemo(() => {
-    const docs = institucionId ? documentos.filter((d) => d.institucionId === institucionId) : documentos
-    const versiones = docs.flatMap((d) => d.versiones ?? [])
+    const causas = institucionId ? expedientes.filter((e) => e.institucionId === institucionId) : expedientes
+    const documentos = causas.flatMap((e) => e.documentos ?? [])
+    const versiones = documentos.flatMap((d) => d.versiones ?? [])
 
     const hoy = new Date()
     const meses = Array.from({ length: 6 }, (_, i) => {
@@ -26,22 +27,22 @@ export function useEstadisticas(documentos, institucionId = '') {
       return { clave: `${f.getFullYear()}-${f.getMonth()}`, nombre: MESES[f.getMonth()], total: 0 }
     })
 
-    docs.forEach((d) => {
-      if (!d.creadoEn) return
-      const f = new Date(d.creadoEn)
+    versiones.forEach((v) => {
+      if (!v.subidoEn) return
+      const f = new Date(v.subidoEn)
       const mes = meses.find((m) => m.clave === `${f.getFullYear()}-${f.getMonth()}`)
       if (mes) mes.total += 1
     })
 
     return {
-      total: docs.length,
+      totalCausas: causas.length,
+      totalDocumentos: documentos.length,
       totalVersiones: versiones.length,
-      conVersiones: docs.filter((d) => (d.versiones?.length ?? 0) > 1).length,
-      porInstitucion: agrupar(docs.map((d) => nombreInstitucion(d.institucionId))),
-      porTipo: agrupar(docs.map((d) => d.tipo)),
+      porInstitucion: agrupar(causas.map((e) => nombreInstitucion(e.institucionId))),
+      porTipo: agrupar(documentos.map((d) => d.tipo)),
       porFuncionario: agrupar(versiones.map((v) => v.subidoPor)),
       porMes: meses.map(({ nombre, total }) => ({ nombre, total })),
-      recientes: [...docs].sort((a, b) => new Date(b.creadoEn) - new Date(a.creadoEn)).slice(0, 5),
+      recientes: [...causas].sort((a, b) => new Date(b.creadoEn) - new Date(a.creadoEn)).slice(0, 5),
     }
-  }, [documentos, institucionId])
+  }, [expedientes, institucionId])
 }

@@ -1,4 +1,15 @@
-export const TIPOS = ['Oficio', 'Resolución', 'Solicitud', 'Notificación', 'Comprobante', 'Otro']
+export const TIPOS = [
+  'Denuncia',
+  'Parte policial',
+  'Citación',
+  'Acta de comparendo',
+  'Resolución',
+  'Sentencia',
+  'Notificación',
+  'Comprobante',
+  'Oficio',
+  'Otro',
+]
 
 export const INSTITUCIONES = [
   { id: 'jpl1', nombre: 'Juzgado De Policía Local 1', etiquetaCodigo: 'ROL' },

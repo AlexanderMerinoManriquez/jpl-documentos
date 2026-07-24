@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Download, ExternalLink, FileWarning, Maximize2, X } from 'lucide-react'
-import { formatearTamano } from '@/lib/documentos'
+import { formatearTamano } from '@/lib/expedientes'
 
 const BOTON = 'inline-flex shrink-0 cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-3 py-1.5 text-sm text-slate-700 transition-colors hover:bg-slate-50'
 const PARAMETROS_VISOR = '#zoom=page-width&pagemode=none&toolbar=1'

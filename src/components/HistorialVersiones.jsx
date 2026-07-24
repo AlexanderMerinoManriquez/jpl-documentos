@@ -1,4 +1,4 @@
-import { formatearFecha } from '@/lib/documentos'
+import { formatearFecha } from '@/lib/expedientes'
 
 export default function HistorialVersiones({ versiones = [], seleccionada, onSeleccionar }) {
   if (versiones.length === 0) {

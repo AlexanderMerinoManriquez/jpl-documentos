@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { FileText, Upload, X } from 'lucide-react'
-import { formatearTamano } from '@/lib/documentos'
+import { formatearTamano } from '@/lib/expedientes'
 
 export default function SelectorArchivo({ archivo, onSeleccionar, error }) {
   const inputRef = useRef(null)

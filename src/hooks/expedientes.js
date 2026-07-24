@@ -1,25 +1,24 @@
 import { useCallback, useEffect, useState } from 'react'
-import { documentosApi } from '@/api/documentos'
+import { expedientesApi } from '@/api/expedientes'
 
-export function useDocumentos(filtros) {
-  const [documentos, setDocumentos] = useState([])
+export function useExpedientes(filtros) {
+  const [expedientes, setExpedientes] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [recarga, setRecarga] = useState(0)
 
   useEffect(() => {
     let vigente = true
 
-    documentosApi
+    expedientesApi
       .buscar(filtros)
       .then((data) => {
         if (!vigente) return
-        setDocumentos(data)
+        setExpedientes(data)
         setError(null)
       })
       .catch((err) => {
         if (!vigente) return
-        setError(err.message ?? 'No se pudieron cargar los documentos')
+        setError(err.message ?? 'No se pudieron cargar los expedientes')
       })
       .finally(() => {
         if (vigente) setLoading(false)
@@ -28,30 +27,25 @@ export function useDocumentos(filtros) {
     return () => {
       vigente = false
     }
-  }, [filtros, recarga])
+  }, [filtros])
 
-  const refetch = useCallback(() => {
-    setLoading(true)
-    setRecarga((n) => n + 1)
-  }, [])
-
-  return { documentos, loading, error, refetch }
+  return { expedientes, loading, error }
 }
 
-export function useDocumento(id) {
-  const [resultado, setResultado] = useState({ id: null, documento: null, error: null })
+export function useExpediente(id) {
+  const [resultado, setResultado] = useState({ id: null, expediente: null, error: null })
   const [recarga, setRecarga] = useState(0)
 
   useEffect(() => {
     let vigente = true
 
-    documentosApi
+    expedientesApi
       .getById(id)
       .then((data) => {
-        if (vigente) setResultado({ id, documento: data ?? null, error: null })
+        if (vigente) setResultado({ id, expediente: data ?? null, error: null })
       })
       .catch((err) => {
-        if (vigente) setResultado({ id, documento: null, error: err.message ?? 'No se pudo cargar el documento' })
+        if (vigente) setResultado({ id, expediente: null, error: err.message ?? 'No se pudo cargar el expediente' })
       })
 
     return () => {
@@ -64,7 +58,7 @@ export function useDocumento(id) {
   const loading = resultado.id !== id
 
   return {
-    documento: loading ? null : resultado.documento,
+    expediente: loading ? null : resultado.expediente,
     loading,
     error: loading ? null : resultado.error,
     refetch,
@@ -74,7 +68,7 @@ export function useDocumento(id) {
 const MAX_MB = 25
 const TIPOS_OK = ['application/pdf']
 
-export function useSubirDocumento() {
+export function useSubirArchivo() {
   const [subiendo, setSubiendo] = useState(false)
   const [error, setError] = useState(null)
 
@@ -103,17 +97,17 @@ export function useSubirDocumento() {
     }
   }, [validarArchivo])
 
-  const crear = useCallback(
-    (datos, archivo) =>
-      ejecutar(() => documentosApi.crear(datos, archivo), archivo, 'No se pudo subir el documento.'),
+  const agregarDocumento = useCallback(
+    (expedienteId, datos, archivo) =>
+      ejecutar(() => expedientesApi.agregarDocumento(expedienteId, datos, archivo), archivo, 'No se pudo agregar el documento.'),
     [ejecutar]
   )
 
   const versionar = useCallback(
-    (id, motivo, archivo) =>
-      ejecutar(() => documentosApi.nuevaVersion(id, motivo, archivo), archivo, 'No se pudo subir la nueva versión.'),
+    (documentoId, motivo, archivo) =>
+      ejecutar(() => expedientesApi.nuevaVersion(documentoId, motivo, archivo), archivo, 'No se pudo subir la nueva versión.'),
     [ejecutar]
   )
 
-  return { crear, versionar, validarArchivo, subiendo, error }
+  return { agregarDocumento, versionar, validarArchivo, subiendo, error }
 }

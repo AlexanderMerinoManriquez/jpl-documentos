@@ -2,13 +2,13 @@ import { useState } from 'react'
 import Boton from '@/components/Boton'
 import Modal from '@/components/Modal'
 import SelectorArchivo from '@/components/SelectorArchivo'
-import { useSubirDocumento } from '@/hooks/documentos'
+import { useSubirArchivo } from '@/hooks/expedientes'
 import { CAMPO } from '@/lib/estilos'
 
 export default function ModalNuevaVersion({ abierto, documentoId, onCerrar, onListo }) {
   const [archivo, setArchivo] = useState(null)
   const [motivo, setMotivo] = useState('')
-  const { versionar, validarArchivo, subiendo, error } = useSubirDocumento()
+  const { versionar, validarArchivo, subiendo, error } = useSubirArchivo()
 
   const errorArchivo = validarArchivo(archivo)
   const completo = archivo && !errorArchivo && motivo.trim().length >= 5
@@ -30,7 +30,7 @@ export default function ModalNuevaVersion({ abierto, documentoId, onCerrar, onLi
   }
 
   return (
-    <Modal abierto={abierto} titulo="Subir nueva versión" onCerrar={cerrar}>
+    <Modal abierto={abierto} titulo="Reemplazar documento" onCerrar={cerrar}>
       <form onSubmit={enviar}>
         <p className="text-sm text-slate-500">El archivo actual pasará al historial y esta versión quedará como vigente.</p>
 
@@ -48,7 +48,7 @@ export default function ModalNuevaVersion({ abierto, documentoId, onCerrar, onLi
         <div className="mt-5 flex justify-end gap-3">
           <Boton type="button" variante="secundario" onClick={cerrar}>Cancelar</Boton>
           <Boton type="submit" disabled={!completo || subiendo}>
-            {subiendo ? 'Subiendo…' : 'Subir versión'}
+            {subiendo ? 'Subiendo…' : 'Reemplazar'}
           </Boton>
         </div>
       </form>

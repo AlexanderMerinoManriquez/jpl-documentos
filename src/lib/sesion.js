@@ -5,6 +5,13 @@ export const ROLES = {
   PUBLICO: 'publico',
 }
 
+export const ROL_LABEL = {
+  [ROLES.ADMIN]: 'Administrador',
+  [ROLES.ENCARGADO]: 'Encargado',
+  [ROLES.FUNCIONARIO]: 'Funcionario',
+  [ROLES.PUBLICO]: 'Consulta',
+}
+
 const PERMISOS = {
   [ROLES.ADMIN]:       { verLista: true,  digitalizar: true,  versionar: true,  estadisticas: true,  todasInstituciones: true  },
   [ROLES.ENCARGADO]:   { verLista: true,  digitalizar: true,  versionar: true,  estadisticas: true,  todasInstituciones: false },
