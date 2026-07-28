@@ -1,12 +1,11 @@
 import { useState } from 'react'
-import { ArrowRight, ChevronRight, FileSearch, FolderOpen, Plus, Search } from 'lucide-react'
+import { ArrowRight, FileSearch, Plus, Search } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import BarraSesion from '@/components/BarraSesion'
 import ModalNuevoExpediente from '@/components/ModalNuevoExpediente'
 import SelectorInstitucion from '@/components/SelectorInstitucion'
 import { expedientesApi } from '@/api/expedientes'
 import { INSTITUCIONES_PUBLICAS, nombreInstitucion } from '@/lib/constantes'
-import { formatearFecha, totalDocumentos, ultimoMovimiento } from '@/lib/expedientes'
 import { useSesion } from '@/lib/sesion'
 
 export default function PublicoConsulta() {
@@ -14,7 +13,6 @@ export default function PublicoConsulta() {
   const { usuario, permisos } = useSesion()
   const [institucionId, setInstitucionId] = useState(INSTITUCIONES_PUBLICAS[0]?.id ?? '')
   const [codigo, setCodigo] = useState('')
-  const [resultado, setResultado] = useState(null)
   const [modalNuevo, setModalNuevo] = useState(false)
   const [buscando, setBuscando] = useState(false)
   const [error, setError] = useState(null)
@@ -30,10 +28,9 @@ export default function PublicoConsulta() {
     setBuscando(true)
     setError(null)
     setSinResultado(false)
-    setResultado(null)
     try {
       const data = await expedientesApi.consultaPublica(limpio, institucionId)
-      if (data.length > 0) setResultado(data[0])
+      if (data.length > 0) navigate(`/expedientes/${data[0].id}`)
       else setSinResultado(true)
     } catch {
       setError('No se pudo realizar la consulta. Intenta nuevamente.')
@@ -41,8 +38,6 @@ export default function PublicoConsulta() {
       setBuscando(false)
     }
   }
-
-  const piezas = resultado ? totalDocumentos(resultado) : 0
 
   return (
     <div className="relative flex min-h-screen flex-col overflow-hidden bg-slate-100">
@@ -56,48 +51,48 @@ export default function PublicoConsulta() {
         <BarraSesion usuario={usuario} />
       </header>
 
-      <main className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-10">
-        <div className="w-full max-w-2xl">
-          <div className="mb-9 flex flex-col items-center gap-4">
-            <span className="flex items-center justify-center rounded-2xl bg-blue-600 px-5 py-4 shadow-lg shadow-blue-600/30 ring-4 ring-blue-600/10">
-              <img src="/logo-chillan.png" alt="Municipalidad de Chillán" className="h-10 w-auto object-contain" />
+      <main className="relative z-10 flex flex-1 flex-col items-center px-4 pt-[12vh]">
+        <div className="w-full max-w-3xl">
+          <div className="mb-10 flex flex-col items-center gap-5">
+            <span className="flex items-center justify-center rounded-3xl bg-blue-600 px-6 py-5 shadow-xl shadow-blue-600/30 ring-4 ring-blue-600/10">
+              <img src="/logo-chillan.png" alt="Municipalidad de Chillán" className="h-12 w-auto object-contain" />
             </span>
             <div className="text-center">
-              <h1 className="text-3xl font-semibold tracking-tight text-slate-900 lg:text-4xl">Consulta de expedientes</h1>
-              <p className="mt-1.5 text-sm text-slate-500">Juzgados de Policía Local · Municipalidad de Chillán</p>
+              <h1 className="text-4xl font-semibold tracking-tight text-slate-900 lg:text-5xl">Archivador Digital</h1>
+              <p className="mt-2.5 text-base text-slate-500">Juzgados de Policía Local · Municipalidad de Chillán</p>
             </div>
           </div>
 
           <form onSubmit={buscar}>
-            <div className="flex flex-col rounded-3xl border border-slate-200 bg-white shadow-lg shadow-slate-900/5 transition-all focus-within:border-blue-400 focus-within:shadow-xl focus-within:ring-4 focus-within:ring-blue-100 sm:flex-row sm:items-center sm:rounded-full">
-              <div className="w-full sm:w-72 sm:shrink-0">
+            <div className="flex flex-col rounded-3xl border border-slate-200 bg-white shadow-xl shadow-slate-900/5 transition-all focus-within:border-blue-400 focus-within:shadow-2xl focus-within:ring-4 focus-within:ring-blue-100 sm:flex-row sm:items-center sm:rounded-full">
+              <div className="w-full sm:w-80 sm:shrink-0">
                 <SelectorInstitucion value={institucionId} opciones={INSTITUCIONES_PUBLICAS} onSeleccionar={setInstitucionId} placeholder="Seleccionar juzgado…" conTodas={false} variante="plano" />
               </div>
 
-              <span className="h-px w-full bg-slate-100 sm:h-8 sm:w-px" />
+              <span className="h-px w-full bg-slate-100 sm:h-9 sm:w-px" />
 
               <div className="relative flex-1">
-                <Search size={19} className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400" />
-                <input value={codigo} onChange={(e) => setCodigo(e.target.value)} placeholder="Ingresa el ROL. Ej: 1234-2026" className="w-full bg-transparent py-4 pl-12 pr-4 text-base outline-none placeholder:text-slate-400" />
+                <Search size={22} className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input value={codigo} onChange={(e) => setCodigo(e.target.value)} placeholder="Ingresa el ROL. Ej: 1234-2026" className="w-full bg-transparent py-5 pl-15 pr-4 text-lg outline-none placeholder:text-slate-400" />
               </div>
 
-              <button type="submit" disabled={buscando} title="Consultar" className="mr-1.5 hidden h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full bg-blue-600 text-white shadow-md shadow-blue-600/25 transition-all hover:bg-blue-700 hover:shadow-lg disabled:bg-slate-300 disabled:shadow-none sm:flex">
+              <button type="submit" disabled={buscando} title="Consultar" className="mr-2 hidden h-13 w-13 shrink-0 cursor-pointer items-center justify-center rounded-full bg-blue-600 text-white shadow-md shadow-blue-600/25 transition-all hover:bg-blue-700 hover:shadow-lg disabled:bg-slate-300 disabled:shadow-none sm:flex">
                 {buscando
-                  ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
-                  : <ArrowRight size={19} />}
+                  ? <span className="h-5 w-5 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+                  : <ArrowRight size={22} />}
               </button>
             </div>
 
             {error && <p className="mt-3 px-2 text-center text-sm text-red-600">{error}</p>}
 
-            <button type="submit" disabled={buscando} className="mt-4 w-full cursor-pointer rounded-xl bg-blue-600 py-3 text-sm font-medium text-white shadow-md shadow-blue-600/20 transition-all hover:bg-blue-700 disabled:bg-slate-300 sm:hidden">
+            <button type="submit" disabled={buscando} className="mt-4 w-full cursor-pointer rounded-2xl bg-blue-600 py-4 text-base font-medium text-white shadow-md shadow-blue-600/20 transition-all hover:bg-blue-700 disabled:bg-slate-300 sm:hidden">
               {buscando ? 'Buscando…' : 'Consultar'}
             </button>
           </form>
 
           {permisos.digitalizar && (
-            <div className="mt-7 flex justify-center">
-              <button type="button" onClick={() => setModalNuevo(true)} className="group inline-flex cursor-pointer items-center gap-2.5 rounded-full border border-dashed border-slate-300 bg-white/70 px-5 py-2.5 text-sm font-medium text-slate-600 shadow-sm backdrop-blur transition-all hover:border-blue-400 hover:bg-white hover:text-blue-700 hover:shadow-md">
+            <div className="mt-8 flex justify-center">
+              <button type="button" onClick={() => setModalNuevo(true)} className="group inline-flex cursor-pointer items-center gap-2.5 rounded-full border border-dashed border-slate-300 bg-white/70 px-6 py-3 text-sm font-medium text-slate-600 shadow-sm backdrop-blur transition-all hover:border-blue-400 hover:bg-white hover:text-blue-700 hover:shadow-md">
                 <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-white transition-transform duration-200 group-hover:rotate-90">
                   <Plus size={13} />
                 </span>
@@ -115,40 +110,6 @@ export default function PublicoConsulta() {
                 <p className="font-medium text-slate-800">No se encontró ese ROL en {nombreInstitucion(institucionId)}.</p>
                 <p className="mt-1 text-sm text-slate-500">Verifica que esté escrito correctamente.</p>
               </div>
-            </div>
-          )}
-
-          {resultado && (
-            <div className="animate-aparecer mt-8">
-              <p className="mb-2.5 px-1 text-sm text-slate-500">1 expediente encontrado</p>
-
-              <button type="button" onClick={() => navigate(`/expedientes/${resultado.id}`)} className="group w-full cursor-pointer overflow-hidden rounded-2xl border border-slate-200 bg-white text-left shadow-md transition-all hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-lg">
-                <div className="flex items-center gap-4 p-5">
-                  <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-blue-50 transition-colors group-hover:bg-blue-100">
-                    <FolderOpen size={26} className="text-blue-600" />
-                  </span>
-
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <p className="text-xl font-semibold tracking-tight text-slate-900">{resultado.codigo}</p>
-                      <span className="rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700">
-                        {piezas} documento{piezas === 1 ? '' : 's'}
-                      </span>
-                    </div>
-                    <p className="mt-1 truncate text-[15px] text-slate-600">{resultado.caratula}</p>
-                  </div>
-
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-slate-300 transition-all group-hover:bg-blue-600 group-hover:text-white">
-                    <ChevronRight size={20} />
-                  </span>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-slate-100 bg-slate-50 px-5 py-3 text-sm text-slate-500">
-                  <span>{nombreInstitucion(resultado.institucionId)}</span>
-                  <span className="text-slate-300">·</span>
-                  <span>Último movimiento {formatearFecha(ultimoMovimiento(resultado))}</span>
-                </div>
-              </button>
             </div>
           )}
         </div>
