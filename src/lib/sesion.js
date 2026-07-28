@@ -22,7 +22,7 @@ const PERMISOS = {
 const SIN_PERMISOS = { verLista: false, digitalizar: false, versionar: false, estadisticas: false, todasInstituciones: false }
 
 export function useSesion() {
-  const usuario = { nombre: '', rol: ROLES.ADMIN, institucionId: null }
+  const usuario = { nombre: '', rol: ROLES.ADMIN, institucionId: 'null' }
 
   const permisos = PERMISOS[usuario?.rol] ?? SIN_PERMISOS
 

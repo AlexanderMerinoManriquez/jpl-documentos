@@ -9,6 +9,11 @@ export const expedientesApi = {
       ? Promise.resolve(mockExpedientes)
       : axiosClient.get('/expedientes', { params: filtros }),
 
+  getById: (id) =>
+    MOCK
+      ? Promise.resolve(mockExpedientes.find((e) => e.id === Number(id)))
+      : axiosClient.get(`/expedientes/${id}`),
+
   consultaPublica: (codigo, institucionId) => {
     if (MOCK) {
       const q = codigo.trim().toLowerCase()
@@ -21,12 +26,19 @@ export const expedientesApi = {
     return axiosClient.get('/publico/expedientes', { params: { codigo, institucionId } })
   },
 
-  getById: (id) =>
-    MOCK
-      ? Promise.resolve(mockExpedientes.find((e) => e.id === Number(id)))
-      : axiosClient.get(`/expedientes/${id}`),
-
-  crear: (datos) => axiosClient.post('/expedientes', datos),
+  crear: (datos) => {
+    if (MOCK) {
+      const nuevo = {
+        id: Date.now(),
+        ...datos,
+        creadoEn: new Date().toISOString(),
+        documentos: [],
+      }
+      mockExpedientes.push(nuevo)
+      return Promise.resolve(nuevo)
+    }
+    return axiosClient.post('/expedientes', datos)
+  },
 
   agregarDocumento: (expedienteId, datos, archivo) => {
     const form = new FormData()

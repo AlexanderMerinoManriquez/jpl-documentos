@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
-import { Download, ExternalLink, FileText, FileWarning, Maximize2, X } from 'lucide-react'
+import { Download, ExternalLink, FileText, FileWarning, History, Maximize2, X } from 'lucide-react'
 import { formatearTamano } from '@/lib/expedientes'
 
 const PARAMETROS_VISOR = '#zoom=page-width&pagemode=none&toolbar=1'
 const BOTON = 'inline-flex shrink-0 cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-white hover:text-blue-600 hover:shadow-sm'
 
-export default function VisorArchivo({ version, alto = 'h-[50vh] lg:h-[70vh]' }) {
+export default function VisorArchivo({ version, esHistorica = false, onVerVigente, alto = 'h-[50vh] lg:h-[70vh]' }) {
   const [expandido, setExpandido] = useState(false)
   const [cargadoId, setCargadoId] = useState(null)
 
@@ -47,6 +47,20 @@ export default function VisorArchivo({ version, alto = 'h-[50vh] lg:h-[70vh]' })
     </div>
   )
 
+  const avisoHistorica = esHistorica && (
+    <div className="flex shrink-0 items-center justify-between gap-3 border-b border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-800">
+      <span className="flex items-center gap-2">
+        <History size={15} className="shrink-0" />
+        Versión {version.numero} · no es la vigente
+      </span>
+      {onVerVigente && (
+        <button type="button" onClick={onVerVigente} className="shrink-0 cursor-pointer font-medium underline hover:text-amber-900">
+          Ver vigente
+        </button>
+      )}
+    </div>
+  )
+
   if (expandido) {
     return (
       <div className="fixed inset-0 z-50 flex flex-col bg-slate-900">
@@ -70,6 +84,7 @@ export default function VisorArchivo({ version, alto = 'h-[50vh] lg:h-[70vh]' })
             </button>
           </div>
         </div>
+        {avisoHistorica}
         <div className="relative min-h-0 flex-1 bg-slate-800">{contenido}</div>
       </div>
     )
@@ -103,6 +118,8 @@ export default function VisorArchivo({ version, alto = 'h-[50vh] lg:h-[70vh]' })
           </a>
         </div>
       </div>
+
+      {avisoHistorica}
 
       <div className="relative min-h-0 flex-1 bg-slate-100">{contenido}</div>
     </div>
