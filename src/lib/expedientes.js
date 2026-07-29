@@ -1,11 +1,7 @@
-export const versionActiva = (documento) => documento?.versiones?.find((v) => v.activa) ?? null
-
 export const totalDocumentos = (expediente) => expediente?.documentos?.length ?? 0
 
 export const ultimoMovimiento = (expediente) => {
-  const fechas = (expediente?.documentos ?? [])
-    .map((d) => versionActiva(d)?.subidoEn)
-    .filter(Boolean)
+  const fechas = (expediente?.documentos ?? []).map((d) => d.creadoEn).filter(Boolean)
   return fechas.length ? fechas.sort().at(-1) : (expediente?.creadoEn ?? null)
 }
 
@@ -15,12 +11,11 @@ export const formatearTamano = (bytes) => {
   return mb >= 1 ? `${mb.toFixed(1)} MB` : `${Math.round(bytes / 1024)} KB`
 }
 
-export const formatearFecha = (iso, conHora = false) => {
+export const formatearFecha = (iso) => {
   if (!iso) return '—'
   return new Date(iso).toLocaleDateString('es-CL', {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
-    ...(conHora && { hour: '2-digit', minute: '2-digit' }),
   })
 }

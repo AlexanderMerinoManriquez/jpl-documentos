@@ -72,7 +72,7 @@ export default function SelectorInstitucion({ value, opciones, onSeleccionar, pl
         <div className="absolute z-20 mt-1.5 w-full min-w-64 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg">
           <div className="relative border-b border-slate-100">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input ref={inputRef} value={filtro} onChange={(e) => { setFiltro(e.target.value); setIndice(0) }} onKeyDown={teclado} placeholder="Buscar institución" className="w-full py-2.5 pl-9 pr-3 text-sm outline-none placeholder:text-slate-400" />
+            <input ref={inputRef} value={filtro} onChange={(e) => { setFiltro(e.target.value); setIndice(0) }} onKeyDown={teclado} placeholder="Buscar Departamento" className="w-full py-2.5 pl-9 pr-3 text-sm outline-none placeholder:text-slate-400" />
           </div>
 
           <ul className="max-h-60 overflow-y-auto py-1">

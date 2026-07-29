@@ -50,13 +50,4 @@ export const expedientesApi = {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
   },
-
-  nuevaVersion: (documentoId, motivo, archivo) => {
-    const form = new FormData()
-    form.append('archivo', archivo)
-    form.append('motivo', motivo)
-    return axiosClient.post(`/documentos/${documentoId}/versiones`, form, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    })
-  },
 }

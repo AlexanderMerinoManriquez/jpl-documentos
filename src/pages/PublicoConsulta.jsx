@@ -2,10 +2,11 @@ import { useState } from 'react'
 import { ArrowRight, FileSearch, Plus, Search } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import BarraSesion from '@/components/BarraSesion'
+import Boton from '@/components/Boton'
 import ModalNuevoExpediente from '@/components/ModalNuevoExpediente'
 import SelectorInstitucion from '@/components/SelectorInstitucion'
 import { expedientesApi } from '@/api/expedientes'
-import { INSTITUCIONES_PUBLICAS, nombreInstitucion } from '@/lib/constantes'
+import { INSTITUCIONES_PUBLICAS, nombreInstitucion, ROL_REGEX } from '@/lib/constantes'
 import { useSesion } from '@/lib/sesion'
 
 export default function PublicoConsulta() {
@@ -18,16 +19,30 @@ export default function PublicoConsulta() {
   const [error, setError] = useState(null)
   const [sinResultado, setSinResultado] = useState(false)
 
+  const limpiarAvisos = () => {
+    setError(null)
+    setSinResultado(false)
+  }
+
+  const escribir = (e) => {
+    setCodigo(e.target.value)
+    limpiarAvisos()
+  }
+
+  const cambiarInstitucion = (id) => {
+    setInstitucionId(id)
+    limpiarAvisos()
+  }
+
   const buscar = async (e) => {
     e.preventDefault()
     const limpio = codigo.trim()
-    if (!/^\d+-\d{4}$/.test(limpio)) {
+    if (!ROL_REGEX.test(limpio)) {
       setError('Ingresa el ROL con el formato número-año. Ej: 1234-2026')
       return
     }
     setBuscando(true)
-    setError(null)
-    setSinResultado(false)
+    limpiarAvisos()
     try {
       const data = await expedientesApi.consultaPublica(limpio, institucionId)
       if (data.length > 0) navigate(`/expedientes/${data[0].id}`)
@@ -39,6 +54,8 @@ export default function PublicoConsulta() {
     }
   }
 
+  const rolEscrito = codigo.trim()
+
   return (
     <div className="relative flex min-h-screen flex-col overflow-hidden bg-slate-100">
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
@@ -47,43 +64,38 @@ export default function PublicoConsulta() {
         <div className="absolute -left-24 top-1/3 h-64 w-64 rounded-full bg-slate-200/50 blur-3xl" />
       </div>
 
-      <header className="relative z-10 flex items-center justify-end px-4 py-3 lg:px-6">
+      <header className="relative z-10 flex items-center justify-between px-4 py-3 lg:px-6">
+        <span className="flex items-center justify-center rounded-xl bg-blue-600 px-3 py-2.5">
+          <img src="/logo-chillan.png" alt="Municipalidad de Chillán" className="h-8 w-auto object-contain" />
+        </span>
         <BarraSesion usuario={usuario} />
       </header>
 
-      <main className="relative z-10 flex flex-1 flex-col items-center px-4 pt-[12vh]">
+      <main className="relative z-10 flex flex-1 flex-col items-center px-4 pt-[16vh]">
         <div className="w-full max-w-3xl">
-          <div className="mb-10 flex flex-col items-center gap-5">
-            <span className="flex items-center justify-center rounded-3xl bg-blue-600 px-6 py-5 shadow-xl shadow-blue-600/30 ring-4 ring-blue-600/10">
-              <img src="/logo-chillan.png" alt="Municipalidad de Chillán" className="h-12 w-auto object-contain" />
-            </span>
-            <div className="text-center">
-              <h1 className="text-4xl font-semibold tracking-tight text-slate-900 lg:text-5xl">Archivador Digital</h1>
-              <p className="mt-2.5 text-base text-slate-500">Juzgados de Policía Local · Municipalidad de Chillán</p>
-            </div>
-          </div>
+          <h1 className="mb-9 text-center text-4xl font-semibold tracking-tight text-slate-900 lg:text-5xl">Archivador Digital</h1>
 
           <form onSubmit={buscar}>
             <div className="flex flex-col rounded-3xl border border-slate-200 bg-white shadow-xl shadow-slate-900/5 transition-all focus-within:border-blue-400 focus-within:shadow-2xl focus-within:ring-4 focus-within:ring-blue-100 sm:flex-row sm:items-center sm:rounded-full">
-              <div className="w-full sm:w-80 sm:shrink-0">
-                <SelectorInstitucion value={institucionId} opciones={INSTITUCIONES_PUBLICAS} onSeleccionar={setInstitucionId} placeholder="Seleccionar juzgado…" conTodas={false} variante="plano" />
+              <div className="w-full sm:w-64 sm:shrink-0">
+                <SelectorInstitucion value={institucionId} opciones={INSTITUCIONES_PUBLICAS} onSeleccionar={cambiarInstitucion} placeholder="Seleccionar departamento…" variante="plano" />
               </div>
 
-              <span className="h-px w-full bg-slate-100 sm:h-9 sm:w-px" />
+              <span className="h-px w-full bg-slate-100 sm:h-8 sm:w-px" />
 
               <div className="relative flex-1">
-                <Search size={22} className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400" />
-                <input value={codigo} onChange={(e) => setCodigo(e.target.value)} placeholder="Ingresa el ROL. Ej: 1234-2026" className="w-full bg-transparent py-5 pl-15 pr-4 text-lg outline-none placeholder:text-slate-400" />
+                <Search size={20} className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input value={codigo} onChange={escribir} placeholder="Ingresa el ROL. Ej: 1234-2026" className="w-full bg-transparent py-4 pl-12 pr-4 text-base outline-none placeholder:text-slate-400" />
               </div>
 
-              <button type="submit" disabled={buscando} title="Consultar" className="mr-2 hidden h-13 w-13 shrink-0 cursor-pointer items-center justify-center rounded-full bg-blue-600 text-white shadow-md shadow-blue-600/25 transition-all hover:bg-blue-700 hover:shadow-lg disabled:bg-slate-300 disabled:shadow-none sm:flex">
+              <button type="submit" disabled={buscando} title="Consultar" className="mr-2 hidden h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full bg-blue-600 text-white shadow-md shadow-blue-600/25 transition-all hover:bg-blue-700 hover:shadow-lg disabled:bg-slate-300 disabled:shadow-none sm:flex">
                 {buscando
                   ? <span className="h-5 w-5 animate-spin rounded-full border-2 border-white/40 border-t-white" />
-                  : <ArrowRight size={22} />}
+                  : <ArrowRight size={20} />}
               </button>
             </div>
 
-            {error && <p className="mt-3 px-2 text-center text-sm text-red-600">{error}</p>}
+            {error && <p className="animate-aparecer mt-3 px-2 text-center text-sm text-red-600">{error}</p>}
 
             <button type="submit" disabled={buscando} className="mt-4 w-full cursor-pointer rounded-2xl bg-blue-600 py-4 text-base font-medium text-white shadow-md shadow-blue-600/20 transition-all hover:bg-blue-700 disabled:bg-slate-300 sm:hidden">
               {buscando ? 'Buscando…' : 'Consultar'}
@@ -91,25 +103,29 @@ export default function PublicoConsulta() {
           </form>
 
           {permisos.digitalizar && (
-            <div className="mt-8 flex justify-center">
-              <button type="button" onClick={() => setModalNuevo(true)} className="group inline-flex cursor-pointer items-center gap-2.5 rounded-full border border-dashed border-slate-300 bg-white/70 px-6 py-3 text-sm font-medium text-slate-600 shadow-sm backdrop-blur transition-all hover:border-blue-400 hover:bg-white hover:text-blue-700 hover:shadow-md">
-                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-white transition-transform duration-200 group-hover:rotate-90">
-                  <Plus size={13} />
-                </span>
-                Registrar nueva causa
-              </button>
+            <div className="mt-9 flex justify-center">
+              <Boton onClick={() => setModalNuevo(true)} className="w-full sm:w-auto">
+                <Plus size={18} />
+                Nueva Causa
+              </Boton>
             </div>
           )}
 
           {sinResultado && (
-            <div className="animate-aparecer mt-8 flex flex-col items-center gap-3 rounded-2xl border border-slate-200 bg-white p-10 text-center shadow-md">
+            <div className="animate-aparecer mt-8 flex flex-col items-center gap-4 rounded-2xl border border-slate-200 bg-white p-10 text-center shadow-md">
               <span className="flex h-14 w-14 items-center justify-center rounded-full bg-slate-100">
                 <FileSearch size={26} className="text-slate-400" />
               </span>
               <div>
-                <p className="font-medium text-slate-800">No se encontró ese ROL en {nombreInstitucion(institucionId)}.</p>
+                <p className="font-medium text-slate-800">No se encontró el ROL {rolEscrito} en {nombreInstitucion(institucionId)}.</p>
                 <p className="mt-1 text-sm text-slate-500">Verifica que esté escrito correctamente.</p>
               </div>
+              {permisos.digitalizar && (
+                <Boton onClick={() => setModalNuevo(true)}>
+                  <Plus size={18} />
+                  Registrar esta causa
+                </Boton>
+              )}
             </div>
           )}
         </div>
@@ -119,12 +135,15 @@ export default function PublicoConsulta() {
         Archivador Digital · Municipalidad de Chillán
       </footer>
 
-      <ModalNuevoExpediente
-        abierto={modalNuevo}
-        institucionFija={usuario?.institucionId ?? institucionId}
-        onCerrar={() => setModalNuevo(false)}
-        onCreado={(exp) => navigate(`/expedientes/${exp.id}`)}
-      />
+      {modalNuevo && (
+        <ModalNuevoExpediente
+          abierto
+          institucionFija={usuario?.institucionId ?? institucionId}
+          codigoInicial={ROL_REGEX.test(rolEscrito) ? rolEscrito : ''}
+          onCerrar={() => setModalNuevo(false)}
+          onCreado={(exp) => navigate(`/expedientes/${exp.id}`)}
+        />
+      )}
     </div>
   )
 }

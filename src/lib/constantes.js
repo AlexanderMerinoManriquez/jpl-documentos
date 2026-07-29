@@ -1,22 +1,11 @@
-export const TIPOS = [
-  'Denuncia',
-  'Parte policial',
-  'Citación',
-  'Acta de comparendo',
-  'Resolución',
-  'Sentencia',
-  'Notificación',
-  'Comprobante',
-  'Oficio',
-  'Otro',
-]
-
 export const INSTITUCIONES = [
   { id: 'jpl1', nombre: 'Juzgado De Policía Local 1', etiquetaCodigo: 'ROL', publica: true },
   { id: 'jpl2', nombre: 'Juzgado De Policía Local 2', etiquetaCodigo: 'ROL', publica: true },
 ]
 
 export const INSTITUCIONES_PUBLICAS = INSTITUCIONES.filter((i) => i.publica)
+
+export const ROL_REGEX = /^\d+-\d{4}$/
 
 export const ETIQUETA_CODIGO_POR_DEFECTO = 'Código'
 

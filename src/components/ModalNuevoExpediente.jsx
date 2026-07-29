@@ -37,12 +37,12 @@ export default function ModalNuevoExpediente({ abierto, institucionFija = '', on
   }
 
   return (
-    <Modal abierto={abierto} titulo="Nuevo expediente" onCerrar={cerrar}>
+    <Modal abierto={abierto} titulo="Nueva Causa" onCerrar={cerrar}>
       <form onSubmit={enviar}>
         <p className="text-sm text-slate-500">Registra la causa. Luego podrás agregarle los documentos digitalizados.</p>
 
         <label className="mt-4 block">
-          <span className="mb-1.5 block text-sm font-medium text-slate-700">Institución <span className="text-red-500">*</span></span>
+          <span className="mb-1.5 block text-sm font-medium text-slate-700">Departamento<span className="text-red-500">*</span></span>
           <SelectorInstitucion value={form.institucionId} opciones={INSTITUCIONES} onSeleccionar={(v) => setForm({ ...form, institucionId: v })} placeholder="Seleccionar institución…" conTodas={false} />
         </label>
 

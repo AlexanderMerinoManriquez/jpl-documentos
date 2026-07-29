@@ -3,9 +3,9 @@ import Boton from '@/components/Boton'
 import Modal from '@/components/Modal'
 import SelectorArchivo from '@/components/SelectorArchivo'
 import { useSubirArchivo } from '@/hooks/expedientes'
-import { CAMPO, TIPOS } from '@/lib/constantes'
+import { CAMPO } from '@/lib/constantes'
 
-const INICIAL = { tipo: '', nombre: '', observaciones: '' }
+const INICIAL = { nombre: '', observaciones: '' }
 
 export default function ModalNuevoDocumento({ abierto, expedienteId, onCerrar, onListo }) {
   const [form, setForm] = useState(INICIAL)
@@ -14,7 +14,7 @@ export default function ModalNuevoDocumento({ abierto, expedienteId, onCerrar, o
 
   const set = (campo) => (e) => setForm({ ...form, [campo]: e.target.value })
   const errorArchivo = validarArchivo(archivo)
-  const completo = archivo && !errorArchivo && form.tipo && form.nombre
+  const completo = archivo && !errorArchivo && form.nombre.trim()
 
   const cerrar = () => {
     setForm(INICIAL)
@@ -24,7 +24,7 @@ export default function ModalNuevoDocumento({ abierto, expedienteId, onCerrar, o
 
   const enviar = async (e) => {
     e.preventDefault()
-    const resultado = await agregarDocumento(expedienteId, form, archivo)
+    const resultado = await agregarDocumento(expedienteId, { ...form, nombre: form.nombre.trim() }, archivo)
     if (resultado) {
       setForm(INICIAL)
       setArchivo(null)
@@ -33,20 +33,12 @@ export default function ModalNuevoDocumento({ abierto, expedienteId, onCerrar, o
   }
 
   return (
-    <Modal abierto={abierto} titulo="Agregar documento al expediente" onCerrar={cerrar}>
+    <Modal abierto={abierto} titulo="Agregar documento a la causa" onCerrar={cerrar}>
       <form onSubmit={enviar}>
         <SelectorArchivo archivo={archivo} onSeleccionar={setArchivo} error={errorArchivo} />
 
         <label className="mt-4 block">
-          <span className="mb-1.5 block text-sm font-medium text-slate-700">Tipo de documento <span className="text-red-500">*</span></span>
-          <select value={form.tipo} onChange={set('tipo')} className={`${CAMPO} cursor-pointer`}>
-            <option value="">Seleccionar…</option>
-            {TIPOS.map((t) => <option key={t} value={t}>{t}</option>)}
-          </select>
-        </label>
-
-        <label className="mt-4 block">
-          <span className="mb-1.5 block text-sm font-medium text-slate-700">Nombre o descripción <span className="text-red-500">*</span></span>
+          <span className="mb-1.5 block text-sm font-medium text-slate-700">Nombre del documento <span className="text-red-500">*</span></span>
           <input value={form.nombre} onChange={set('nombre')} placeholder="Ej: Parte denuncia Carabineros" className={CAMPO} />
         </label>
 
