@@ -1,10 +1,3 @@
-export const totalDocumentos = (expediente) => expediente?.documentos?.length ?? 0
-
-export const ultimoMovimiento = (expediente) => {
-  const fechas = (expediente?.documentos ?? []).map((d) => d.creadoEn).filter(Boolean)
-  return fechas.length ? fechas.sort().at(-1) : (expediente?.creadoEn ?? null)
-}
-
 export const formatearTamano = (bytes) => {
   if (!bytes) return '—'
   const mb = bytes / 1024 / 1024

@@ -4,10 +4,6 @@ import { mockExpedientes } from '@/mocks/expedientes'
 const MOCK = import.meta.env.VITE_USE_MOCKS === 'true'
 
 export const expedientesApi = {
-  buscar: (filtros) =>
-    MOCK
-      ? Promise.resolve(mockExpedientes)
-      : axiosClient.get('/expedientes', { params: filtros }),
 
   getById: (id) =>
     MOCK

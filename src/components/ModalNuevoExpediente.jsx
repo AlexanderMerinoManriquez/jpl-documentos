@@ -7,8 +7,8 @@ import { CAMPO, etiquetaCodigo, INSTITUCIONES } from '@/lib/constantes'
 
 const INICIAL = { codigo: '', caratula: '', institucionId: '' }
 
-export default function ModalNuevoExpediente({ abierto, institucionFija = '', onCerrar, onCreado }) {
-  const [form, setForm] = useState({ ...INICIAL, institucionId: institucionFija })
+export default function ModalNuevoExpediente({ abierto, institucionFija = '', codigoInicial = '', onCerrar, onCreado }) {
+  const [form, setForm] = useState({ ...INICIAL, institucionId: institucionFija, codigo: codigoInicial })
   const [guardando, setGuardando] = useState(false)
   const [error, setError] = useState(null)
 
@@ -43,7 +43,7 @@ export default function ModalNuevoExpediente({ abierto, institucionFija = '', on
 
         <label className="mt-4 block">
           <span className="mb-1.5 block text-sm font-medium text-slate-700">Departamento<span className="text-red-500">*</span></span>
-          <SelectorInstitucion value={form.institucionId} opciones={INSTITUCIONES} onSeleccionar={(v) => setForm({ ...form, institucionId: v })} placeholder="Seleccionar institución…" conTodas={false} />
+          <SelectorInstitucion value={form.institucionId} opciones={INSTITUCIONES} onSeleccionar={(v) => setForm({ ...form, institucionId: v })} placeholder="Seleccionar institución…" />
         </label>
 
         <label className="mt-4 block">

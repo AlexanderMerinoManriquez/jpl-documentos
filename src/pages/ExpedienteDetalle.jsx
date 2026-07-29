@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ArrowLeft, ChevronLeft, ChevronRight, FilePlus2, FileText, FolderOpen, Info, Plus, Search } from 'lucide-react'
+import { ArrowLeft, ChevronLeft, ChevronRight, FilePlus2, FileText, FolderOpen, Plus, Search } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 import BarraSesion from '@/components/BarraSesion'
 import Boton from '@/components/Boton'
@@ -39,10 +39,10 @@ export default function ExpedienteDetalle() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-100">
+    <div className="flex min-h-screen flex-col bg-gray-50">
       <header className="shrink-0 border-b border-slate-200 bg-white">
         <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-3 px-4 py-2 lg:px-6">
-          <Link to="/" className="inline-flex items-center gap-2 rounded-full border border-slate-200/80 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition-colors hover:border-blue-300 hover:text-blue-600">
+          <Link to="/" className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-blue-600">
             <Search size={15} />
             Nueva consulta
           </Link>
@@ -65,9 +65,8 @@ export default function ExpedienteDetalle() {
                 <div className="min-w-0">
                   <p className="flex items-center gap-2 truncate text-sm font-semibold text-slate-900">
                     {documento.nombre}
-                    <span className="hidden rounded-md bg-slate-100 px-1.5 py-0.5 text-[11px] font-medium text-slate-500 sm:inline">{expediente.codigo}</span>
+                    <span className="hidden rounded-md bg-blue-50 px-1.5 py-0.5 text-[11px] font-medium text-blue-600 sm:inline">{expediente.codigo}</span>
                   </p>
-                  <p className="truncate text-xs text-slate-500">{documento.nombreArchivo}</p>
                 </div>
               </div>
 
@@ -90,18 +89,12 @@ export default function ExpedienteDetalle() {
                   <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">{documentos.length}</span>
                 </h2>
                 <div className="min-h-0 flex-1 overflow-y-auto">
-                  <ListaDocumentos documentos={documentos} seleccionado={documento} onSeleccionar={seleccionar} />
+                  <ListaDocumentos documentos={documentos} seleccionado={documento} onSeleccionar={seleccionar} onAgregar={permisos.digitalizar ? () => setModalDocumento(true) : undefined} />
                 </div>
               </section>
             </aside>
 
             <div className="flex min-w-0 flex-1 flex-col">
-              {documento.observaciones && (
-                <div className="mb-3 flex items-start gap-2.5 rounded-xl border border-blue-100 bg-blue-50/70 px-4 py-2.5 text-sm text-slate-700">
-                  <Info size={16} className="mt-0.5 shrink-0 text-blue-600" />
-                  <p><span className="font-medium">Observaciones:</span> {documento.observaciones}</p>
-                </div>
-              )}
 
               <VisorArchivo documento={documento} alto="h-[70vh] lg:h-[calc(100vh-14rem)]" />
             </div>
@@ -132,7 +125,9 @@ export default function ExpedienteDetalle() {
               </div>
               <div className="flex flex-wrap gap-x-6 gap-y-1.5 border-t border-slate-100 px-5 py-3.5 text-sm text-slate-500 lg:px-7">
                 <span>{nombreInstitucion(expediente.institucionId)}</span>
+                <span className="text-slate-300">•</span>
                 <span>Creado el {formatearFecha(expediente.creadoEn)}</span>
+                <span className="text-slate-300">•</span>
                 <span>{documentos.length} documento{documentos.length === 1 ? '' : 's'}</span>
               </div>
             </section>
@@ -185,9 +180,6 @@ function TarjetaDocumento({ documento, indice, onAbrir }) {
           <span className="mt-0.5 block text-xs text-slate-400">
             Ingresado el {formatearFecha(documento.creadoEn)}
           </span>
-          {documento.observaciones && (
-            <span className="mt-1 block truncate text-xs italic text-slate-500">{documento.observaciones}</span>
-          )}
         </span>
 
         <ChevronRight size={20} className="shrink-0 text-slate-300 transition-all group-hover:translate-x-0.5 group-hover:text-blue-600" />
@@ -198,7 +190,7 @@ function TarjetaDocumento({ documento, indice, onAbrir }) {
 
 function PantallaMensaje({ texto, tono }) {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-100 p-6">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 p-6">
       <p className={`text-sm ${tono === 'error' ? 'text-red-600' : 'text-slate-500'}`}>{texto}</p>
     </div>
   )

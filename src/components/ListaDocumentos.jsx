@@ -1,8 +1,8 @@
-import { FileText } from 'lucide-react'
+import { FileText, Plus } from 'lucide-react'
 import { formatearFecha } from '@/lib/expedientes'
 
-export default function ListaDocumentos({ documentos = [], seleccionado, onSeleccionar }) {
-  if (documentos.length === 0) {
+export default function ListaDocumentos({ documentos = [], seleccionado, onSeleccionar, onAgregar }) {
+  if (documentos.length === 0 && !onAgregar) {
     return <p className="p-4 text-sm text-slate-400">Este expediente aún no tiene documentos.</p>
   }
 
@@ -26,6 +26,14 @@ export default function ListaDocumentos({ documentos = [], seleccionado, onSelec
           </li>
         )
       })}
+
+      {onAgregar && (
+        <li>
+          <button type="button" onClick={onAgregar} title="Agregar documento" className="flex w-full cursor-pointer items-center justify-center rounded-lg p-2.5 text-slate-400 transition-colors hover:bg-blue-50 hover:text-blue-600">
+            <Plus size={18} strokeWidth={2.75} />
+          </button>
+        </li>
+      )}
     </ol>
   )
 }

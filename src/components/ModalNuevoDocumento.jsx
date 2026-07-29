@@ -5,46 +5,38 @@ import SelectorArchivo from '@/components/SelectorArchivo'
 import { useSubirArchivo } from '@/hooks/expedientes'
 import { CAMPO } from '@/lib/constantes'
 
-const INICIAL = { nombre: '', observaciones: '' }
-
 export default function ModalNuevoDocumento({ abierto, expedienteId, onCerrar, onListo }) {
-  const [form, setForm] = useState(INICIAL)
+  const [nombre, setNombre] = useState('')
   const [archivo, setArchivo] = useState(null)
   const { agregarDocumento, validarArchivo, subiendo, error } = useSubirArchivo()
 
-  const set = (campo) => (e) => setForm({ ...form, [campo]: e.target.value })
   const errorArchivo = validarArchivo(archivo)
-  const completo = archivo && !errorArchivo && form.nombre.trim()
+  const completo = archivo && !errorArchivo && nombre.trim()
 
   const cerrar = () => {
-    setForm(INICIAL)
+    setNombre('')
     setArchivo(null)
     onCerrar()
   }
 
   const enviar = async (e) => {
     e.preventDefault()
-    const resultado = await agregarDocumento(expedienteId, { ...form, nombre: form.nombre.trim() }, archivo)
+    const resultado = await agregarDocumento(expedienteId, { nombre: nombre.trim() }, archivo)
     if (resultado) {
-      setForm(INICIAL)
+      setNombre('')
       setArchivo(null)
       onListo()
     }
   }
 
   return (
-    <Modal abierto={abierto} titulo="Agregar documento a la causa" onCerrar={cerrar}>
+    <Modal abierto={abierto} titulo="Agregar documento al expediente" onCerrar={cerrar}>
       <form onSubmit={enviar}>
         <SelectorArchivo archivo={archivo} onSeleccionar={setArchivo} error={errorArchivo} />
 
         <label className="mt-4 block">
           <span className="mb-1.5 block text-sm font-medium text-slate-700">Nombre del documento <span className="text-red-500">*</span></span>
-          <input value={form.nombre} onChange={set('nombre')} placeholder="Ej: Parte denuncia Carabineros" className={CAMPO} />
-        </label>
-
-        <label className="mt-4 block">
-          <span className="mb-1.5 block text-sm font-medium text-slate-700">Observaciones</span>
-          <textarea rows={2} value={form.observaciones} onChange={set('observaciones')} className={CAMPO} />
+          <input value={nombre} onChange={(e) => setNombre(e.target.value)} placeholder="Ej: Parte denuncia Carabineros" className={CAMPO} />
         </label>
 
         {error && <p className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}

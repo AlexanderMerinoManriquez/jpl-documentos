@@ -9,7 +9,6 @@ export const mockExpedientes = [
       {
         id: 11,
         nombre: 'Parte denuncia Carabineros',
-        observaciones: '',
         creadoEn: '2026-07-15T09:32:00Z',
         uid: '',
         nombreArchivo: 'denuncia.pdf',
@@ -19,7 +18,6 @@ export const mockExpedientes = [
       {
         id: 12,
         nombre: 'Citación a comparendo',
-        observaciones: '',
         creadoEn: '2026-07-20T10:00:00Z',
         uid: '',
         nombreArchivo: 'citacion.pdf',
@@ -38,7 +36,6 @@ export const mockExpedientes = [
       {
         id: 21,
         nombre: 'Comprobante de pago multa',
-        observaciones: 'Escaneo de baja calidad, original en archivo físico.',
         creadoEn: '2026-07-18T14:05:00Z',
         uid: '',
         nombreArchivo: 'comprobante.pdf',

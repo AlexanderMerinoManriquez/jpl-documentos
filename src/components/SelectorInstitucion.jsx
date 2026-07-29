@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Check, ChevronDown, Search } from 'lucide-react'
 
-const TODAS = { id: '', nombre: '' }
 
 const BASE = 'flex w-full cursor-pointer items-center justify-between gap-2 text-left text-[15px] text-slate-800 transition'
 
@@ -10,7 +9,7 @@ const VARIANTES = {
   plano: 'bg-transparent px-5 py-3.5 outline-none',
 }
 
-export default function SelectorInstitucion({ value, opciones, onSeleccionar, placeholder = 'Todas las instituciones', conTodas = true, variante = 'campo', className = '' }) {
+export default function SelectorInstitucion({ value, opciones, onSeleccionar, placeholder = 'Todas las instituciones', variante = 'campo', className = '' }) {
   const [abierto, setAbierto] = useState(false)
   const [filtro, setFiltro] = useState('')
   const [indice, setIndice] = useState(0)
@@ -18,11 +17,10 @@ export default function SelectorInstitucion({ value, opciones, onSeleccionar, pl
   const inputRef = useRef(null)
 
   const lista = useMemo(() => {
-    const base = conTodas ? [TODAS, ...opciones] : opciones
     const q = filtro.trim().toLowerCase()
-    if (!q) return base
-    return base.filter((o) => (o.nombre || placeholder).toLowerCase().includes(q))
-  }, [filtro, opciones, placeholder, conTodas])
+    if (!q) return opciones
+    return opciones.filter((o) => o.nombre.toLowerCase().includes(q))
+  }, [filtro, opciones])
 
   useEffect(() => {
     if (!abierto) return
@@ -80,9 +78,9 @@ export default function SelectorInstitucion({ value, opciones, onSeleccionar, pl
               const seleccionada = opcion.id === value
               const resaltada = i === indice
               return (
-                <li key={opcion.id || '__todas'}>
+                <li key={opcion.id}>
                   <button type="button" onMouseEnter={() => setIndice(i)} onClick={() => elegir(opcion)} className={`flex w-full cursor-pointer items-center justify-between gap-2 px-3.5 py-2.5 text-left text-sm transition-colors ${resaltada ? 'bg-blue-50' : ''} ${seleccionada ? 'font-medium text-blue-700' : 'text-slate-700'}`}>
-                    <span className="truncate">{opcion.nombre || placeholder}</span>
+                    <span className="truncate">{opcion.nombre}</span>
                     {seleccionada && <Check size={16} className="shrink-0 text-blue-600" />}
                   </button>
                 </li>

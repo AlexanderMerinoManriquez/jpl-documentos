@@ -14,7 +14,6 @@ const MARGEN = 32
 const PROPORCION_A4 = 1.414
 
 const BOTON = 'inline-flex h-9 shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-lg px-3 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-600'
-const BOTON_OSCURO = 'inline-flex h-9 shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-lg px-3 text-sm font-medium text-slate-300 transition-colors hover:bg-slate-700 hover:text-white disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-300'
 
 export default function VisorArchivo({ documento, alto = 'h-[50vh] lg:h-[70vh]' }) {
   const [expandido, setExpandido] = useState(false)
@@ -80,50 +79,47 @@ export default function VisorArchivo({ documento, alto = 'h-[50vh] lg:h-[70vh]' 
 
   const anchoPagina = Math.round(Math.min(Math.max(ancho - MARGEN, 0), ANCHO_MAX_PAGINA) * zoom)
 
-  const barra = (oscuro) => {
-    const boton = oscuro ? BOTON_OSCURO : BOTON
-    return (
-      <div className={`flex shrink-0 items-center justify-between gap-2 border-b px-3 py-2 ${oscuro ? 'border-slate-700 bg-slate-800' : 'border-slate-200 bg-white'}`}>
-        <span className={`px-1 text-sm tabular-nums ${oscuro ? 'text-slate-300' : 'text-slate-600'}`}>
-          {paginas ? `${paginas} página${paginas === 1 ? '' : 's'}` : '–'}
-        </span>
+  const barra = () => (
+    <div className="flex shrink-0 items-center justify-between gap-2 border-b border-slate-200 bg-white px-3 py-2">
+      <span className="px-1 text-sm tabular-nums text-slate-600">
+        {paginas ? `${paginas} página${paginas === 1 ? '' : 's'}` : '–'}
+      </span>
 
-        <div className="flex items-center gap-1">
-          <button type="button" onClick={() => cambiarZoom(-ZOOM_PASO)} disabled={zoom <= ZOOM_MIN} className={boton} title="Alejar">
-            <Minus size={16} />
-          </button>
-          <span className={`w-12 text-center text-sm tabular-nums ${oscuro ? 'text-slate-300' : 'text-slate-600'}`}>{Math.round(zoom * 100)}%</span>
-          <button type="button" onClick={() => cambiarZoom(ZOOM_PASO)} disabled={zoom >= ZOOM_MAX} className={boton} title="Acercar">
-            <Plus size={16} />
-          </button>
-        </div>
-
-        <div className="flex items-center gap-1">
-          <button type="button" onClick={abrirEnPestana} className={boton} title="Abrir en pestaña nueva">
-            <ExternalLink size={16} />
-          </button>
-          <button type="button" onClick={imprimir} className={boton} title="Imprimir">
-            <Printer size={16} />
-          </button>
-          <a href={documento.url} download={documento.nombreArchivo} className={boton} title="Descargar">
-            <Download size={16} />
-          </a>
-          {oscuro ? (
-            <button type="button" onClick={() => setExpandido(false)} className={boton} title="Cerrar (Esc)">
-              <X size={17} />
-            </button>
-          ) : (
-            <button type="button" onClick={() => setExpandido(true)} className={boton} title="Pantalla completa">
-              <Maximize2 size={16} />
-            </button>
-          )}
-        </div>
+      <div className="flex items-center gap-1">
+        <button type="button" onClick={() => cambiarZoom(-ZOOM_PASO)} disabled={zoom <= ZOOM_MIN} className={BOTON} title="Alejar">
+          <Minus size={16} />
+        </button>
+        <span className="w-12 text-center text-sm tabular-nums text-slate-600">{Math.round(zoom * 100)}%</span>
+        <button type="button" onClick={() => cambiarZoom(ZOOM_PASO)} disabled={zoom >= ZOOM_MAX} className={BOTON} title="Acercar">
+          <Plus size={16} />
+        </button>
       </div>
-    )
-  }
 
-  const lienzo = (oscuro) => (
-    <div ref={lienzoRef} className={`min-h-0 flex-1 overflow-auto ${oscuro ? 'bg-slate-900' : 'bg-slate-100'}`}>
+      <div className="flex items-center gap-1">
+        <button type="button" onClick={abrirEnPestana} className={BOTON} title="Abrir en pestaña nueva">
+          <ExternalLink size={16} />
+        </button>
+        <button type="button" onClick={imprimir} className={BOTON} title="Imprimir">
+          <Printer size={16} />
+        </button>
+        <a href={documento.url} download={documento.nombreArchivo} className={BOTON} title="Descargar">
+          <Download size={16} />
+        </a>
+        {expandido ? (
+          <button type="button" onClick={() => setExpandido(false)} className={BOTON} title="Cerrar (Esc)">
+            <X size={17} />
+          </button>
+        ) : (
+          <button type="button" onClick={() => setExpandido(true)} className={BOTON} title="Pantalla completa">
+            <Maximize2 size={16} />
+          </button>
+        )}
+      </div>
+    </div>
+  )
+
+  const lienzo = () => (
+    <div ref={lienzoRef} className={`min-h-0 flex-1 overflow-auto ${expandido ? 'bg-slate-200' : 'bg-slate-100'}`}>
       {errorCarga ? (
         <div className="flex h-full items-center justify-center p-6 text-center">
           <p className="text-sm text-slate-400">No se pudo cargar el documento.</p>
@@ -156,23 +152,24 @@ export default function VisorArchivo({ documento, alto = 'h-[50vh] lg:h-[70vh]' 
 
   if (expandido) {
     return (
-      <div className="fixed inset-0 z-50 flex flex-col bg-slate-900">
-        <div className="flex shrink-0 items-center gap-3 border-b border-slate-700 px-4 py-2.5">
-          <p className="truncate text-sm font-medium text-white">{documento.nombreArchivo}</p>
+      <div className="fixed inset-0 z-50 flex flex-col bg-slate-200">
+        <div className="flex shrink-0 items-center gap-3 border-b border-slate-200 bg-white px-4 py-2.5">
+          <p className="truncate text-sm font-medium text-slate-800">{documento.nombreArchivo}</p>
         </div>
-        {barra(true)}
-        {lienzo(true)}
+        {barra()}
+        {lienzo()}
       </div>
     )
   }
 
   return (
     <div className={`flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-md ${alto}`}>
-      {barra(false)}
-      {lienzo(false)}
+      {barra()}
+      {lienzo()}
     </div>
   )
 }
+
 function PaginaPerezosa({ numero, ancho }) {
   const contenedorRef = useRef(null)
   const [visible, setVisible] = useState(false)
