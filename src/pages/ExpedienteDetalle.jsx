@@ -34,7 +34,7 @@ export default function ExpedienteDetalle() {
     <div className="flex min-h-screen flex-col bg-gray-50">
       <Encabezado usuario={usuario} />
 
-      <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-6 lg:py-10">
+      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6 lg:py-10">
         <div className="animate-aparecer">
           <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-md">
             <div className="h-1.5 bg-blue-600" />
@@ -88,8 +88,8 @@ export default function ExpedienteDetalle() {
             <>
               <h2 className="mt-8 px-1 text-sm font-semibold uppercase tracking-wide text-slate-400">Documentos de la causa</h2>
               <ol className="mt-3 space-y-3">
-                {documentos.map((doc, i) => ({ doc, numero: i + 1 })).reverse().map(({ doc, numero }) => (
-                  <TarjetaDocumento key={doc.id} documento={doc} numero={numero} onAbrir={() => navigate(RUTAS.documento(expediente.id, doc.id))} />
+                {[...documentos].reverse().map((doc) => (
+                  <TarjetaDocumento key={doc.id} documento={doc} onAbrir={() => navigate(RUTAS.documento(expediente.id, doc.id))} />
                 ))}
               </ol>
             </>
@@ -98,17 +98,17 @@ export default function ExpedienteDetalle() {
       </main>
 
       <ModalNuevoDocumento abierto={modalDocumento} expedienteId={expediente.id} onCerrar={() => setModalDocumento(false)} onListo={trasCambio} />
+
     </div>
   )
 }
 
-function TarjetaDocumento({ documento, numero, onAbrir }) {
+function TarjetaDocumento({ documento, onAbrir }) {
   return (
     <li>
       <button type="button" onClick={onAbrir} className="group flex w-full cursor-pointer items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-lg hover:shadow-blue-600/5 lg:p-5">
-        <span className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
           <FileText size={20} />
-          <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full border-2 border-white bg-blue-600 px-1 text-[11px] font-semibold tabular-nums text-white">{numero}</span>
         </span>
 
         <span className="min-w-0 flex-1">

@@ -77,8 +77,7 @@ export function useSubirArchivo() {
   return { agregarDocumento, validarArchivo, subiendo, error }
 }
 
-export function useBusquedaPublica(departamentoInicial = '') {
-  const [departamentoId, setDepartamentoId] = useState(departamentoInicial)
+export function useBusquedaPublica(departamentoId) {
   const [rol, setRol] = useState('')
   const [buscando, setBuscando] = useState(false)
   const [error, setError] = useState(null)
@@ -91,11 +90,6 @@ export function useBusquedaPublica(departamentoInicial = '') {
 
   const escribir = (e) => {
     setRol(e.target.value)
-    limpiarAvisos()
-  }
-
-  const cambiarDepartamento = (id) => {
-    setDepartamentoId(id)
     limpiarAvisos()
   }
 
@@ -121,7 +115,7 @@ export function useBusquedaPublica(departamentoInicial = '') {
     }
   }
 
-  return { rol, departamentoId, buscando, error, sinResultado, escribir, cambiarDepartamento, buscar }
+  return { rol, buscando, error, sinResultado, escribir, buscar }
 }
 export function useUnificarPdf() {
   const [generando, setGenerando] = useState(false)
@@ -212,4 +206,24 @@ export function useEstadisticas() {
   }, [])
 
   return estado
+}
+export function useEliminarDocumento() {
+  const [eliminando, setEliminando] = useState(false)
+  const [error, setError] = useState(null)
+
+  const eliminar = useCallback(async (documentoId) => {
+    setEliminando(true)
+    setError(null)
+    try {
+      await expedientesApi.eliminarDocumento(documentoId)
+      return true
+    } catch (err) {
+      setError(err.message ?? 'No se pudo eliminar el documento.')
+      return false
+    } finally {
+      setEliminando(false)
+    }
+  }, [])
+
+  return { eliminar, eliminando, error }
 }

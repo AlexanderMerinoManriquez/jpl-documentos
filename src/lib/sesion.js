@@ -6,7 +6,7 @@ const ROLES = {
 }
 
 export const ROL_LABEL = {
-  [ROLES.ADMIN]: 'JPL1 • Juan Peréz',
+  [ROLES.ADMIN]: 'Administrador',
   [ROLES.ENCARGADO]: 'Encargado',
   [ROLES.FUNCIONARIO]: 'Funcionario',
   [ROLES.PUBLICO]: 'Consulta',
@@ -22,7 +22,13 @@ const PERMISOS = {
 const SIN_PERMISOS = { digitalizar: false, estadisticas: false }
 
 export function useSesion() {
-  const usuario = { nombre: '', rol: ROLES.ADMIN, departamentoId: null }
+  const usuario = {
+    nombre: 'Ana Torres',
+    rol: ROLES.FUNCIONARIO,
+    departamentoId: 'jpl1',
+    causasCreadas: 12,
+    documentosSubidos: 47,
+  }
 
   return {
     usuario,

@@ -8,6 +8,7 @@ const TAMANOS = {
 const VARIANTES = {
   primario: 'bg-blue-600 text-white shadow-sm shadow-blue-600/20 hover:bg-blue-700 disabled:bg-slate-300 disabled:shadow-none',
   secundario: 'border border-slate-200 text-slate-700 hover:bg-slate-50 disabled:opacity-60',
+  peligro: 'bg-red-600 text-white shadow-sm shadow-red-600/20 hover:bg-red-700 disabled:bg-slate-300 disabled:shadow-none',
 }
 
 export default function Boton({ variante = 'primario', tamano = 'md', className = '', ...props }) {

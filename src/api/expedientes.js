@@ -36,8 +36,6 @@ export const expedientesApi = {
     return axiosClient.post('/expedientes', datos)
   },
 
-  // TODO backend: registrar la actividad del usuario (crear causa / subir documento)
-  // y devolver sus últimos 5 expedientes trabajados. El token identifica al usuario.
   recientes: () =>
     MOCK
       ? Promise.resolve([...mockExpedientes].reverse().slice(0, 5).map(({ id, rol, caratula }) => ({ id, rol, caratula })))
@@ -62,6 +60,20 @@ export const expedientesApi = {
       return Promise.resolve({ total: mockExpedientes.length, porEstado, porMes })
     }
     return axiosClient.get('/estadisticas')
+  },
+
+  eliminarDocumento: (documentoId) => {
+    if (MOCK) {
+      for (const exp of mockExpedientes) {
+        const i = exp.documentos?.findIndex((d) => d.id === documentoId) ?? -1
+        if (i >= 0) {
+          exp.documentos.splice(i, 1)
+          break
+        }
+      }
+      return Promise.resolve(true)
+    }
+    return axiosClient.delete(`/documentos/${documentoId}`)
   },
 
   agregarDocumento: (expedienteId, datos, archivo) => {

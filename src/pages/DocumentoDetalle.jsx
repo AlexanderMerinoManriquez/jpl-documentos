@@ -1,13 +1,15 @@
 import { useState } from 'react'
-import { ArrowLeft, ChevronLeft, ChevronRight, FileText } from 'lucide-react'
+import { ArrowLeft, ChevronLeft, ChevronRight, FileText, Trash2 } from 'lucide-react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
+import Boton from '@/components/Boton'
 import Encabezado from '@/components/Encabezado'
 import PantallaMensaje from '@/components/PantallaMensaje'
 import ListaDocumentos from '@/components/ListaDocumentos'
+import Modal from '@/components/Modal'
 import ModalNuevoDocumento from '@/components/ModalNuevoDocumento'
 import BotonDescargarExpediente from '@/components/BotonDescargarExpediente'
 import VisorArchivo from '@/components/VisorArchivo'
-import { useExpediente } from '@/hooks/expedientes'
+import { useEliminarDocumento, useExpediente } from '@/hooks/expedientes'
 import { RUTAS } from '@/lib/rutas'
 import { useSesion } from '@/lib/sesion'
 
@@ -19,6 +21,7 @@ export default function DocumentoDetalle() {
   const { expediente, loading, error, refetch } = useExpediente(id)
   const { usuario, permisos } = useSesion()
   const [modalDocumento, setModalDocumento] = useState(false)
+  const [modalEliminar, setModalEliminar] = useState(false)
 
   if (loading) return <PantallaMensaje texto="Cargando…" />
   if (error) return <PantallaMensaje texto={error} tono="error" />
@@ -56,8 +59,13 @@ export default function DocumentoDetalle() {
             <FileText size={18} className="shrink-0 text-blue-600" />
             <div className="min-w-0">
               <p className="flex items-center gap-2 truncate text-sm font-semibold text-slate-900">
-                {documento.nombre}
-                <span className="hidden rounded-md bg-blue-50 px-1.5 py-0.5 text-[11px] font-medium text-blue-600 sm:inline">{expediente.rol}</span>
+                <span className="truncate">{documento.nombre}</span>
+                <span className="hidden shrink-0 rounded-md bg-blue-50 px-1.5 py-0.5 text-[11px] font-medium text-blue-600 sm:inline">{expediente.rol}</span>
+                {permisos.digitalizar && (
+                  <button type="button" onClick={() => setModalEliminar(true)} title="Eliminar este documento" className="flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600">
+                    <Trash2 size={16} />
+                  </button>
+                )}
               </p>
             </div>
           </div>
@@ -96,6 +104,41 @@ export default function DocumentoDetalle() {
       </div>
 
       <ModalNuevoDocumento abierto={modalDocumento} expedienteId={expediente.id} onCerrar={() => setModalDocumento(false)} onListo={trasCambio} />
+
+      {modalEliminar && (
+        <ModalEliminarDocumento
+          documento={documento}
+          onCerrar={() => setModalEliminar(false)}
+          onEliminado={() => navigate(RUTAS.expediente(expediente.id))}
+        />
+      )}
     </div>
+  )
+}
+
+function ModalEliminarDocumento({ documento, onCerrar, onEliminado }) {
+  const { eliminar, eliminando, error } = useEliminarDocumento()
+
+  const confirmar = async () => {
+    const ok = await eliminar(documento.id)
+    if (ok) onEliminado()
+  }
+
+  return (
+    <Modal abierto titulo="Eliminar documento" onCerrar={onCerrar}>
+      <p className="text-sm text-slate-600">
+        ¿Seguro que quieres eliminar <span className="font-medium text-slate-900">{documento.nombre}</span>?
+        El documento dejará de aparecer en el expediente.
+      </p>
+
+      {error && <p className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
+
+      <div className="mt-5 flex justify-end gap-3">
+        <Boton type="button" variante="secundario" onClick={onCerrar} disabled={eliminando}>Cancelar</Boton>
+        <Boton type="button" variante="peligro" onClick={confirmar} disabled={eliminando}>
+          {eliminando ? 'Eliminando…' : 'Eliminar documento'}
+        </Boton>
+      </div>
+    </Modal>
   )
 }
