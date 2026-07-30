@@ -9,7 +9,7 @@ const VARIANTES = {
   plano: 'bg-transparent px-5 py-3.5 outline-none',
 }
 
-export default function SelectorInstitucion({ value, opciones, onSeleccionar, placeholder = 'Todas las instituciones', variante = 'campo', className = '' }) {
+export default function SelectorDepartamento({ value, opciones, onSeleccionar, placeholder = 'Seleccionar departamento…', variante = 'campo', className = '' }) {
   const [abierto, setAbierto] = useState(false)
   const [filtro, setFiltro] = useState('')
   const [indice, setIndice] = useState(0)

@@ -3,8 +3,14 @@ import { expedientesApi } from '@/api/expedientes'
 import { ROL_REGEX } from '@/lib/constantes'
 
 export function useExpediente(id) {
-  const [resultado, setResultado] = useState({ id: null, expediente: null, error: null })
+  const [estado, setEstado] = useState({ cargando: true, expediente: null, error: null })
   const [recarga, setRecarga] = useState(0)
+
+  const [idActual, setIdActual] = useState(id)
+  if (id !== idActual) {
+    setIdActual(id)
+    setEstado({ cargando: true, expediente: null, error: null })
+  }
 
   useEffect(() => {
     let vigente = true
@@ -12,10 +18,10 @@ export function useExpediente(id) {
     expedientesApi
       .getById(id)
       .then((data) => {
-        if (vigente) setResultado({ id, expediente: data ?? null, error: null })
+        if (vigente) setEstado({ cargando: false, expediente: data ?? null, error: null })
       })
       .catch((err) => {
-        if (vigente) setResultado({ id, expediente: null, error: err.message ?? 'No se pudo cargar el expediente' })
+        if (vigente) setEstado({ cargando: false, expediente: null, error: err.message ?? 'No se pudo cargar el expediente' })
       })
 
     return () => {
@@ -25,12 +31,10 @@ export function useExpediente(id) {
 
   const refetch = useCallback(() => setRecarga((n) => n + 1), [])
 
-  const loading = resultado.id !== id
-
   return {
-    expediente: loading ? null : resultado.expediente,
-    loading,
-    error: loading ? null : resultado.error,
+    expediente: estado.expediente,
+    loading: estado.cargando,
+    error: estado.error,
     refetch,
   }
 }
@@ -73,9 +77,9 @@ export function useSubirArchivo() {
   return { agregarDocumento, validarArchivo, subiendo, error }
 }
 
-export function useBusquedaPublica(institucionInicial = '') {
-  const [institucionId, setInstitucionId] = useState(institucionInicial)
-  const [codigo, setCodigo] = useState('')
+export function useBusquedaPublica(departamentoInicial = '') {
+  const [departamentoId, setDepartamentoId] = useState(departamentoInicial)
+  const [rol, setRol] = useState('')
   const [buscando, setBuscando] = useState(false)
   const [error, setError] = useState(null)
   const [sinResultado, setSinResultado] = useState(false)
@@ -86,18 +90,18 @@ export function useBusquedaPublica(institucionInicial = '') {
   }
 
   const escribir = (e) => {
-    setCodigo(e.target.value)
+    setRol(e.target.value)
     limpiarAvisos()
   }
 
-  const cambiarInstitucion = (id) => {
-    setInstitucionId(id)
+  const cambiarDepartamento = (id) => {
+    setDepartamentoId(id)
     limpiarAvisos()
   }
 
   const buscar = async (e) => {
     e.preventDefault()
-    const limpio = codigo.trim()
+    const limpio = rol.trim()
     if (!ROL_REGEX.test(limpio)) {
       setError('Ingresa el ROL con el formato número-año. Ej: 1234-2026')
       return null
@@ -105,7 +109,7 @@ export function useBusquedaPublica(institucionInicial = '') {
     setBuscando(true)
     limpiarAvisos()
     try {
-      const data = await expedientesApi.consultaPublica(limpio, institucionId)
+      const data = await expedientesApi.consultaPublica(limpio, departamentoId)
       if (data.length > 0) return data[0]
       setSinResultado(true)
       return null
@@ -117,5 +121,5 @@ export function useBusquedaPublica(institucionInicial = '') {
     }
   }
 
-  return { codigo, institucionId, buscando, error, sinResultado, escribir, cambiarInstitucion, buscar }
+  return { rol, departamentoId, buscando, error, sinResultado, escribir, cambiarDepartamento, buscar }
 }

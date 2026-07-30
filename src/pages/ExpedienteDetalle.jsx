@@ -1,15 +1,16 @@
 import { useState } from 'react'
 import { ArrowLeft, ChevronLeft, ChevronRight, FilePlus2, FileText, FolderOpen, Plus, Search } from 'lucide-react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 import BarraSesion from '@/components/BarraSesion'
 import Boton from '@/components/Boton'
 import ListaDocumentos from '@/components/ListaDocumentos'
 import ModalNuevoDocumento from '@/components/ModalNuevoDocumento'
 import VisorArchivo from '@/components/VisorArchivo'
 import { useExpediente } from '@/hooks/expedientes'
-import { etiquetaCodigo, nombreInstitucion } from '@/lib/constantes'
+import { nombreDepartamento } from '@/lib/constantes'
 import { formatearFecha } from '@/lib/expedientes'
 import { useSesion } from '@/lib/sesion'
+import { RUTAS } from '@/lib/rutas'
 
 const BTN = 'inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-600 transition-colors hover:border-blue-300 hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-slate-200 disabled:hover:text-slate-600'
 
@@ -17,7 +18,8 @@ export default function ExpedienteDetalle() {
   const { id } = useParams()
   const { expediente, loading, error, refetch } = useExpediente(id)
   const { usuario, permisos } = useSesion()
-  const [documentoId, setDocumentoId] = useState(null)
+  const [parametros, setParametros] = useSearchParams()
+  const documentoId = Number(parametros.get('doc')) || null
   const [modalDocumento, setModalDocumento] = useState(false)
 
   if (loading) return <PantallaMensaje texto="Cargando…" />
@@ -30,8 +32,8 @@ export default function ExpedienteDetalle() {
   const anterior = indice > 0 ? documentos[indice - 1] : null
   const siguiente = indice >= 0 && indice < documentos.length - 1 ? documentos[indice + 1] : null
 
-  const seleccionar = (doc) => setDocumentoId(doc.id)
-  const volver = () => setDocumentoId(null)
+  const seleccionar = (doc) => setParametros({ doc: doc.id })
+  const volver = () => setParametros({})
 
   const trasCambio = () => {
     setModalDocumento(false)
@@ -42,7 +44,7 @@ export default function ExpedienteDetalle() {
     <div className="flex min-h-screen flex-col bg-gray-50">
       <header className="shrink-0 border-b border-slate-200 bg-white">
         <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-3 px-4 py-2 lg:px-6">
-          <Link to="/" className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-blue-600">
+          <Link to={RUTAS.inicio} className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-blue-600">
             <Search size={15} />
             Nueva consulta
           </Link>
@@ -65,7 +67,7 @@ export default function ExpedienteDetalle() {
                 <div className="min-w-0">
                   <p className="flex items-center gap-2 truncate text-sm font-semibold text-slate-900">
                     {documento.nombre}
-                    <span className="hidden rounded-md bg-blue-50 px-1.5 py-0.5 text-[11px] font-medium text-blue-600 sm:inline">{expediente.codigo}</span>
+                    <span className="hidden rounded-md bg-blue-50 px-1.5 py-0.5 text-[11px] font-medium text-blue-600 sm:inline">{expediente.rol}</span>
                   </p>
                 </div>
               </div>
@@ -111,8 +113,8 @@ export default function ExpedienteDetalle() {
                     <FolderOpen size={28} className="text-blue-600" />
                   </span>
                   <div className="min-w-0">
-                    <p className="text-xs font-medium uppercase tracking-wide text-slate-400">{etiquetaCodigo(expediente.institucionId)}</p>
-                    <h1 className="text-2xl font-semibold tracking-tight text-slate-900 lg:text-3xl">{expediente.codigo}</h1>
+                    <p className="text-xs font-medium uppercase tracking-wide text-slate-400">ROL</p>
+                    <h1 className="text-2xl font-semibold tracking-tight text-slate-900 lg:text-3xl">{expediente.rol}</h1>
                     <p className="mt-0.5 truncate text-[15px] text-slate-600">{expediente.caratula}</p>
                   </div>
                 </div>
@@ -124,7 +126,7 @@ export default function ExpedienteDetalle() {
                 )}
               </div>
               <div className="flex flex-wrap gap-x-6 gap-y-1.5 border-t border-slate-100 px-5 py-3.5 text-sm text-slate-500 lg:px-7">
-                <span>{nombreInstitucion(expediente.institucionId)}</span>
+                <span>{nombreDepartamento(expediente.departamentoId)}</span>
                 <span className="text-slate-300">•</span>
                 <span>Creado el {formatearFecha(expediente.creadoEn)}</span>
                 <span className="text-slate-300">•</span>

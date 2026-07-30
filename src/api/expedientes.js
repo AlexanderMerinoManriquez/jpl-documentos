@@ -10,16 +10,16 @@ export const expedientesApi = {
       ? Promise.resolve(mockExpedientes.find((e) => e.id === Number(id)))
       : axiosClient.get(`/expedientes/${id}`),
 
-  consultaPublica: (codigo, institucionId) => {
+  consultaPublica: (rol, departamentoId) => {
     if (MOCK) {
-      const q = codigo.trim().toLowerCase()
+      const q = rol.trim().toLowerCase()
       return Promise.resolve(
         mockExpedientes.filter(
-          (e) => e.codigo.toLowerCase() === q && e.institucionId === institucionId
+          (e) => e.rol.toLowerCase() === q && e.departamentoId === departamentoId
         )
       )
     }
-    return axiosClient.get('/publico/expedientes', { params: { codigo, institucionId } })
+    return axiosClient.get('/publico/expedientes', { params: { rol, departamentoId } })
   },
 
   crear: (datos) => {

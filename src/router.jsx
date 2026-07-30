@@ -1,9 +1,10 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
-import PublicoConsulta from '@/pages/PublicoConsulta'
+import Inicio from '@/pages/Inicio'
 import ExpedienteDetalle from '@/pages/ExpedienteDetalle'
+import { RUTAS } from '@/lib/rutas'
  
 export const router = createBrowserRouter([
-  { path: '/', element: <PublicoConsulta /> },
-  { path: '/expedientes/:id', element: <ExpedienteDetalle /> },
-  { path: '*', element: <Navigate to="/" replace /> },
+  { path: RUTAS.inicio, element: <Inicio /> },
+  { path: RUTAS.expedientePatron, element: <ExpedienteDetalle /> },
+  { path: '*', element: <Navigate to={RUTAS.inicio} replace /> },
 ])

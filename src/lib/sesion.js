@@ -22,7 +22,7 @@ const PERMISOS = {
 const SIN_PERMISOS = { digitalizar: false }
 
 export function useSesion() {
-  const usuario = { nombre: '', rol: ROLES.ADMIN, institucionId: null }
+  const usuario = { nombre: '', rol: ROLES.ADMIN, departamentoId: null }
 
   return {
     usuario,

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { LogOut, UserRound } from 'lucide-react'
-import { nombreInstitucion } from '@/lib/constantes'
+import { nombreDepartamento } from '@/lib/constantes'
 import { ROL_LABEL } from '@/lib/sesion'
 
 export default function BarraSesion({ usuario }) {
@@ -19,8 +19,8 @@ export default function BarraSesion({ usuario }) {
   if (!usuario?.rol) return null
 
   const nombre = usuario.nombre || ROL_LABEL[usuario.rol]
-  const detalle = usuario.institucionId
-    ? nombreInstitucion(usuario.institucionId)
+  const detalle = usuario.departamentoId
+    ? nombreDepartamento(usuario.departamentoId)
     : usuario.nombre
       ? ROL_LABEL[usuario.rol]
       : null

@@ -1,27 +1,27 @@
 import { useState } from 'react'
-import { ArrowRight, FileSearch, Plus, Search } from 'lucide-react'
+import { FileSearch, Plus } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import BarraSesion from '@/components/BarraSesion'
 import Boton from '@/components/Boton'
+import BuscadorExpediente from '@/components/BuscadorExpediente'
 import ModalNuevoExpediente from '@/components/ModalNuevoExpediente'
-import SelectorInstitucion from '@/components/SelectorInstitucion'
 import { useBusquedaPublica } from '@/hooks/expedientes'
-import { INSTITUCIONES_PUBLICAS, nombreInstitucion, ROL_REGEX } from '@/lib/constantes'
+import { DEPARTAMENTOS_PUBLICOS, nombreDepartamento, ROL_REGEX } from '@/lib/constantes'
+import { RUTAS } from '@/lib/rutas'
 import { useSesion } from '@/lib/sesion'
 
-export default function PublicoConsulta() {
+export default function Inicio() {
   const navigate = useNavigate()
   const { usuario, permisos } = useSesion()
   const [modalNuevo, setModalNuevo] = useState(false)
-  const { codigo, institucionId, buscando, error, sinResultado, escribir, cambiarInstitucion, buscar } =
-    useBusquedaPublica(INSTITUCIONES_PUBLICAS[0]?.id ?? '')
+  const busqueda = useBusquedaPublica(DEPARTAMENTOS_PUBLICOS[0]?.id ?? '')
 
   const enviar = async (e) => {
-    const expediente = await buscar(e)
-    if (expediente) navigate(`/expedientes/${expediente.id}`)
+    const expediente = await busqueda.buscar(e)
+    if (expediente) navigate(RUTAS.expediente(expediente.id))
   }
 
-  const rolEscrito = codigo.trim()
+  const rolEscrito = busqueda.rol.trim()
 
   return (
     <div className="relative flex min-h-screen flex-col overflow-hidden bg-slate-100">
@@ -36,32 +36,15 @@ export default function PublicoConsulta() {
         <div className="w-full max-w-3xl">
           <h1 className="mb-9 text-center text-4xl font-semibold tracking-tight text-slate-900 lg:text-5xl">Archivador Digital</h1>
 
-          <form onSubmit={enviar}>
-            <div className="flex flex-col rounded-3xl border border-slate-200 bg-white shadow-xl shadow-slate-900/5 transition-all focus-within:border-blue-400 focus-within:shadow-2xl focus-within:ring-4 focus-within:ring-blue-100 sm:flex-row sm:items-center sm:rounded-full">
-              <div className="w-full sm:w-64 sm:shrink-0">
-                <SelectorInstitucion value={institucionId} opciones={INSTITUCIONES_PUBLICAS} onSeleccionar={cambiarInstitucion} placeholder="Seleccionar juzgado…" variante="plano" />
-              </div>
-
-              <span className="h-px w-full bg-slate-100 sm:h-8 sm:w-px" />
-
-              <div className="relative flex-1">
-                <Search size={20} className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400" />
-                <input value={codigo} onChange={escribir} placeholder="Ingresa el ROL. Ej: 1234-2026" className="w-full bg-transparent py-4 pl-12 pr-4 text-base outline-none placeholder:text-slate-400" />
-              </div>
-
-              <button type="submit" disabled={buscando} title="Consultar" className="mr-2 hidden h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full bg-blue-600 text-white shadow-sm shadow-blue-600/20 transition-all hover:bg-blue-700 disabled:bg-slate-300 disabled:shadow-none sm:flex">
-                {buscando
-                  ? <span className="h-5 w-5 animate-spin rounded-full border-2 border-white/40 border-t-white" />
-                  : <ArrowRight size={20} />}
-              </button>
-            </div>
-
-            {error && <p className="animate-aparecer mt-3 px-2 text-center text-sm text-red-600">{error}</p>}
-
-            <button type="submit" disabled={buscando} className="mt-4 w-full cursor-pointer rounded-2xl bg-blue-600 py-4 text-base font-medium text-white shadow-sm shadow-blue-600/20 transition-all hover:bg-blue-700 disabled:bg-slate-300 sm:hidden">
-              {buscando ? 'Buscando…' : 'Consultar'}
-            </button>
-          </form>
+          <BuscadorExpediente
+            rol={busqueda.rol}
+            departamentoId={busqueda.departamentoId}
+            buscando={busqueda.buscando}
+            error={busqueda.error}
+            onEscribir={busqueda.escribir}
+            onDepartamento={busqueda.cambiarDepartamento}
+            onEnviar={enviar}
+          />
 
           {permisos.digitalizar && (
             <div className="mt-9 flex justify-center">
@@ -72,10 +55,10 @@ export default function PublicoConsulta() {
             </div>
           )}
 
-          {sinResultado && (
+          {busqueda.sinResultado && (
             <SinResultado
               rol={rolEscrito}
-              institucionId={institucionId}
+              departamentoId={busqueda.departamentoId}
               puedeRegistrar={permisos.digitalizar}
               onRegistrar={() => setModalNuevo(true)}
             />
@@ -90,10 +73,10 @@ export default function PublicoConsulta() {
       {modalNuevo && (
         <ModalNuevoExpediente
           abierto
-          institucionFija={usuario?.institucionId ?? institucionId}
-          codigoInicial={ROL_REGEX.test(rolEscrito) ? rolEscrito : ''}
+          departamentoFijo={usuario?.departamentoId ?? busqueda.departamentoId}
+          rolInicial={ROL_REGEX.test(rolEscrito) ? rolEscrito : ''}
           onCerrar={() => setModalNuevo(false)}
-          onCreado={(exp) => navigate(`/expedientes/${exp.id}`)}
+          onCreado={(exp) => navigate(RUTAS.expediente(exp.id))}
         />
       )}
     </div>
@@ -110,14 +93,14 @@ function FondoDecorativo() {
   )
 }
 
-function SinResultado({ rol, institucionId, puedeRegistrar, onRegistrar }) {
+function SinResultado({ rol, departamentoId, puedeRegistrar, onRegistrar }) {
   return (
     <div className="animate-aparecer mt-8 flex flex-col items-center gap-4 rounded-2xl border border-slate-200 bg-white p-10 text-center shadow-md">
       <span className="flex h-14 w-14 items-center justify-center rounded-full bg-slate-100">
         <FileSearch size={26} className="text-slate-400" />
       </span>
       <div>
-        <p className="font-medium text-slate-800">No se encontró el ROL {rol} en {nombreInstitucion(institucionId)}.</p>
+        <p className="font-medium text-slate-800">No se encontró el ROL {rol} en {nombreDepartamento(departamentoId)}.</p>
         <p className="mt-1 text-sm text-slate-500">Verifica que esté escrito correctamente.</p>
       </div>
       {puedeRegistrar && (

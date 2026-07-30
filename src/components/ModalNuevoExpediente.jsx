@@ -1,33 +1,37 @@
 import { useState } from 'react'
 import Boton from '@/components/Boton'
 import Modal from '@/components/Modal'
-import SelectorInstitucion from '@/components/SelectorInstitucion'
+import SelectorDepartamento from '@/components/SelectorDepartamento'
 import { expedientesApi } from '@/api/expedientes'
-import { CAMPO, etiquetaCodigo, INSTITUCIONES } from '@/lib/constantes'
+import { CAMPO, DEPARTAMENTOS, ROL_REGEX } from '@/lib/constantes'
 
-const INICIAL = { codigo: '', caratula: '', institucionId: '' }
+const INICIAL = { rol: '', caratula: '', departamentoId: '' }
 
-export default function ModalNuevoExpediente({ abierto, institucionFija = '', codigoInicial = '', onCerrar, onCreado }) {
-  const [form, setForm] = useState({ ...INICIAL, institucionId: institucionFija, codigo: codigoInicial })
+export default function ModalNuevoExpediente({ abierto, departamentoFijo = '', rolInicial = '', onCerrar, onCreado }) {
+  const [form, setForm] = useState({ ...INICIAL, departamentoId: departamentoFijo, rol: rolInicial })
   const [guardando, setGuardando] = useState(false)
   const [error, setError] = useState(null)
 
   const set = (campo) => (e) => setForm({ ...form, [campo]: e.target.value })
-  const etiqueta = etiquetaCodigo(form.institucionId)
-  const completo = form.codigo.trim() && form.caratula.trim() && form.institucionId
+  const completo = form.rol.trim() && form.caratula.trim() && form.departamentoId
 
   const cerrar = () => {
-    setForm({ ...INICIAL, institucionId: institucionFija })
+    setForm({ ...INICIAL, departamentoId: departamentoFijo })
     setError(null)
     onCerrar()
   }
 
   const enviar = async (e) => {
     e.preventDefault()
+    const rol = form.rol.trim()
+    if (!ROL_REGEX.test(rol)) {
+      setError('El ROL debe tener el formato número-año. Ej: 1234-2026')
+      return
+    }
     setGuardando(true)
     setError(null)
     try {
-      const exp = await expedientesApi.crear(form)
+      const exp = await expedientesApi.crear({ ...form, rol })
       onCreado(exp)
     } catch (err) {
       setError(err.message ?? 'No se pudo crear el expediente.')
@@ -42,13 +46,13 @@ export default function ModalNuevoExpediente({ abierto, institucionFija = '', co
         <p className="text-sm text-slate-500">Registra la causa. Luego podrás agregarle los documentos digitalizados.</p>
 
         <label className="mt-4 block">
-          <span className="mb-1.5 block text-sm font-medium text-slate-700">Departamento<span className="text-red-500">*</span></span>
-          <SelectorInstitucion value={form.institucionId} opciones={INSTITUCIONES} onSeleccionar={(v) => setForm({ ...form, institucionId: v })} placeholder="Seleccionar institución…" />
+          <span className="mb-1.5 block text-sm font-medium text-slate-700">Departamento <span className="text-red-500">*</span></span>
+          <SelectorDepartamento value={form.departamentoId} opciones={DEPARTAMENTOS} onSeleccionar={(v) => setForm({ ...form, departamentoId: v })} />
         </label>
 
         <label className="mt-4 block">
-          <span className="mb-1.5 block text-sm font-medium text-slate-700">{etiqueta} <span className="text-red-500">*</span></span>
-          <input value={form.codigo} onChange={set('codigo')} placeholder="1234-2026" className={CAMPO} />
+          <span className="mb-1.5 block text-sm font-medium text-slate-700">ROL <span className="text-red-500">*</span></span>
+          <input value={form.rol} onChange={set('rol')} placeholder="1234-2026" className={CAMPO} />
         </label>
 
         <label className="mt-4 block">
