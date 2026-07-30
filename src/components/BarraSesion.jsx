@@ -1,20 +1,14 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { LogOut, UserRound } from 'lucide-react'
 import { nombreDepartamento } from '@/lib/constantes'
 import { ROL_LABEL } from '@/lib/sesion'
+import { useClickAfuera } from '@/hooks/ui'
 
 export default function BarraSesion({ usuario }) {
   const [abierto, setAbierto] = useState(false)
   const contenedor = useRef(null)
 
-  useEffect(() => {
-    if (!abierto) return
-    const fuera = (e) => {
-      if (!contenedor.current?.contains(e.target)) setAbierto(false)
-    }
-    document.addEventListener('mousedown', fuera)
-    return () => document.removeEventListener('mousedown', fuera)
-  }, [abierto])
+  useClickAfuera(contenedor, abierto, () => setAbierto(false))
 
   if (!usuario?.rol) return null
 

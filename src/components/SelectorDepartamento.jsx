@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useClickAfuera } from '@/hooks/ui'
 import { Check, ChevronDown, Search } from 'lucide-react'
 
 
@@ -22,14 +23,7 @@ export default function SelectorDepartamento({ value, opciones, onSeleccionar, p
     return opciones.filter((o) => o.nombre.toLowerCase().includes(q))
   }, [filtro, opciones])
 
-  useEffect(() => {
-    if (!abierto) return
-    const fuera = (e) => {
-      if (!contenedor.current?.contains(e.target)) setAbierto(false)
-    }
-    document.addEventListener('mousedown', fuera)
-    return () => document.removeEventListener('mousedown', fuera)
-  }, [abierto])
+  useClickAfuera(contenedor, abierto, () => setAbierto(false))
 
   useEffect(() => {
     if (abierto) inputRef.current?.focus()

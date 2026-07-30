@@ -13,13 +13,13 @@ export const ROL_LABEL = {
 }
 
 const PERMISOS = {
-  [ROLES.ADMIN]:       { digitalizar: true },
-  [ROLES.ENCARGADO]:   { digitalizar: true },
-  [ROLES.FUNCIONARIO]: { digitalizar: true },
-  [ROLES.PUBLICO]:     { digitalizar: false },
+  [ROLES.ADMIN]:       { digitalizar: true,  estadisticas: true  },
+  [ROLES.ENCARGADO]:   { digitalizar: true,  estadisticas: true  },
+  [ROLES.FUNCIONARIO]: { digitalizar: true,  estadisticas: false },
+  [ROLES.PUBLICO]:     { digitalizar: false, estadisticas: false },
 }
 
-const SIN_PERMISOS = { digitalizar: false }
+const SIN_PERMISOS = { digitalizar: false, estadisticas: false }
 
 export function useSesion() {
   const usuario = { nombre: '', rol: ROLES.ADMIN, departamentoId: null }

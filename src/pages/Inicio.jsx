@@ -1,11 +1,12 @@
-import { useState } from 'react'
-import { FileSearch, Plus } from 'lucide-react'
+import { useRef, useState } from 'react'
+import { ChartColumn, ChevronDown, ChevronRight, FileSearch, History, Plus } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import BarraSesion from '@/components/BarraSesion'
 import Boton from '@/components/Boton'
 import BuscadorExpediente from '@/components/BuscadorExpediente'
 import ModalNuevoExpediente from '@/components/ModalNuevoExpediente'
-import { useBusquedaPublica } from '@/hooks/expedientes'
+import { useBusquedaPublica, useRecientes } from '@/hooks/expedientes'
+import { useClickAfuera } from '@/hooks/ui'
 import { DEPARTAMENTOS_PUBLICOS, nombreDepartamento, ROL_REGEX } from '@/lib/constantes'
 import { RUTAS } from '@/lib/rutas'
 import { useSesion } from '@/lib/sesion'
@@ -46,14 +47,24 @@ export default function Inicio() {
             onEnviar={enviar}
           />
 
-          {permisos.digitalizar && (
-            <div className="mt-9 flex justify-center">
-              <Boton onClick={() => setModalNuevo(true)} className="w-full sm:w-auto">
-                <Plus size={18} />
-                Nueva Causa
+          <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
+            {permisos.digitalizar && (
+              <>
+                <Boton onClick={() => setModalNuevo(true)}>
+                  <Plus size={18} />
+                  Nueva Causa
+                </Boton>
+
+                <MenuRecientes onAbrir={(exp) => navigate(RUTAS.expediente(exp.id))} />
+              </>
+            )}
+            {permisos.estadisticas && (
+              <Boton onClick={() => navigate(RUTAS.estadisticas)}>
+                <ChartColumn size={18} />
+                Estadísticas
               </Boton>
-            </div>
-          )}
+            )}
+          </div>
 
           {busqueda.sinResultado && (
             <SinResultado
@@ -78,6 +89,45 @@ export default function Inicio() {
           onCerrar={() => setModalNuevo(false)}
           onCreado={(exp) => navigate(RUTAS.expediente(exp.id))}
         />
+      )}
+    </div>
+  )
+}
+
+function MenuRecientes({ onAbrir }) {
+  const [abierto, setAbierto] = useState(false)
+  const contenedor = useRef(null)
+  const { cargando, recientes, error } = useRecientes()
+  useClickAfuera(contenedor, abierto, () => setAbierto(false))
+
+  return (
+    <div ref={contenedor} className="relative">
+      <Boton onClick={() => setAbierto((v) => !v)}>
+        <History size={17} />
+        Recientes
+        <ChevronDown size={16} className={`transition-transform ${abierto ? 'rotate-180' : ''}`} />
+      </Boton>
+
+      {abierto && (
+        <div className="absolute left-1/2 z-20 mt-2 w-80 -translate-x-1/2 overflow-hidden rounded-xl border border-slate-200 bg-white py-1.5 shadow-lg">
+          <p className="px-4 pb-1.5 pt-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Tus últimas causas</p>
+
+          {cargando && <p className="px-4 py-3 text-sm text-slate-400">Cargando…</p>}
+          {error && <p className="px-4 py-3 text-sm text-red-600">{error}</p>}
+          {!cargando && !error && recientes.length === 0 && (
+            <p className="px-4 py-3 text-sm text-slate-400">Aún no has trabajado en ninguna causa.</p>
+          )}
+
+          {recientes.map((exp) => (
+            <button key={exp.id} type="button" onClick={() => onAbrir(exp)} className="group flex w-full cursor-pointer items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-blue-50">
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm font-semibold tabular-nums text-slate-800 group-hover:text-blue-700">{exp.rol}</span>
+                <span className="block truncate text-xs text-slate-500">{exp.caratula}</span>
+              </span>
+              <ChevronRight size={16} className="shrink-0 text-slate-300 group-hover:text-blue-600" />
+            </button>
+          ))}
+        </div>
       )}
     </div>
   )

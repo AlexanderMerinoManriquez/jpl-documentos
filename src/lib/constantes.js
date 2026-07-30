@@ -1,4 +1,3 @@
-// Departamentos municipales que usan el archivador (alineado a la tabla `departamento` de la BD).
 export const DEPARTAMENTOS = [
   { id: 'jpl1', codigo: 'JPL1', nombre: 'Juzgado De Policía Local 1', publica: true },
   { id: 'jpl2', codigo: 'JPL2', nombre: 'Juzgado De Policía Local 2', publica: true },
@@ -7,6 +6,15 @@ export const DEPARTAMENTOS = [
 export const DEPARTAMENTOS_PUBLICOS = DEPARTAMENTOS.filter((d) => d.publica)
 
 export const ROL_REGEX = /^\d+-\d{4}$/
+
+export const ESTADOS = [
+  { id: 'ingresada', nombre: 'Ingresada', color: 'bg-blue-500' },
+  { id: 'en_tramite', nombre: 'En trámite', color: 'bg-amber-500' },
+  { id: 'resuelta', nombre: 'Resuelta', color: 'bg-emerald-500' },
+]
+
+export const nombreEstado = (id) => ESTADOS.find((e) => e.id === id)?.nombre ?? 'Sin estado'
+export const colorEstado = (id) => ESTADOS.find((e) => e.id === id)?.color ?? 'bg-slate-400'
 
 export const nombreDepartamento = (departamentoId) =>
   DEPARTAMENTOS.find((d) => d.id === departamentoId)?.nombre ?? '—'

@@ -123,3 +123,93 @@ export function useBusquedaPublica(departamentoInicial = '') {
 
   return { rol, departamentoId, buscando, error, sinResultado, escribir, cambiarDepartamento, buscar }
 }
+export function useUnificarPdf() {
+  const [generando, setGenerando] = useState(false)
+  const [progreso, setProgreso] = useState(null)
+  const [error, setError] = useState(null)
+
+  const unificar = useCallback(async (expediente) => {
+    const documentos = expediente?.documentos ?? []
+    if (documentos.length === 0) return
+    setGenerando(true)
+    setProgreso({ actual: 0, total: documentos.length })
+    setError(null)
+    try {
+      const { PDFDocument } = await import('pdf-lib')
+      const combinado = await PDFDocument.create()
+
+      for (const [i, doc] of documentos.entries()) {
+        setProgreso({ actual: i + 1, total: documentos.length })
+        const bytes = await fetch(doc.url).then((r) => {
+          if (!r.ok) throw new Error(`No se pudo leer ${doc.nombre}`)
+          return r.arrayBuffer()
+        })
+        const pdf = await PDFDocument.load(bytes)
+        const paginas = await combinado.copyPages(pdf, pdf.getPageIndices())
+        paginas.forEach((p) => combinado.addPage(p))
+      }
+
+      const salida = await combinado.save()
+      const blob = new Blob([salida], { type: 'application/pdf' })
+      const url = URL.createObjectURL(blob)
+      const enlace = document.createElement('a')
+      enlace.href = url
+      enlace.download = `Expediente ${expediente.rol}.pdf`
+      enlace.click()
+      URL.revokeObjectURL(url)
+    } catch (err) {
+      setError(err.message ?? 'No se pudo unificar el expediente.')
+    } finally {
+      setGenerando(false)
+      setProgreso(null)
+    }
+  }, [])
+
+  return { unificar, generando, progreso, error }
+}
+
+export function useRecientes() {
+  const [estado, setEstado] = useState({ cargando: true, recientes: [], error: null })
+
+  useEffect(() => {
+    let vigente = true
+
+    expedientesApi
+      .recientes()
+      .then((data) => {
+        if (vigente) setEstado({ cargando: false, recientes: data ?? [], error: null })
+      })
+      .catch(() => {
+        if (vigente) setEstado({ cargando: false, recientes: [], error: 'No se pudieron cargar las causas recientes.' })
+      })
+
+    return () => {
+      vigente = false
+    }
+  }, [])
+
+  return estado
+}
+
+export function useEstadisticas() {
+  const [estado, setEstado] = useState({ cargando: true, datos: null, error: null })
+
+  useEffect(() => {
+    let vigente = true
+
+    expedientesApi
+      .estadisticas()
+      .then((data) => {
+        if (vigente) setEstado({ cargando: false, datos: data ?? null, error: null })
+      })
+      .catch(() => {
+        if (vigente) setEstado({ cargando: false, datos: null, error: 'No se pudieron cargar las estadísticas.' })
+      })
+
+    return () => {
+      vigente = false
+    }
+  }, [])
+
+  return estado
+}

@@ -2,6 +2,7 @@ export const mockExpedientes = [
   {
     id: 1,
     rol: '1234-2026',
+    estado: 'en_tramite',
     departamentoId: 'jpl1',
     caratula: 'Municipalidad de Chillán con Pérez',
     creadoEn: '2026-07-15T09:32:00Z',
@@ -29,6 +30,7 @@ export const mockExpedientes = [
   {
     id: 2,
     rol: '1235-2026',
+    estado: 'ingresada',
     departamentoId: 'jpl2',
     caratula: 'Tesorería Municipal con Soto',
     creadoEn: '2026-07-18T14:05:00Z',
